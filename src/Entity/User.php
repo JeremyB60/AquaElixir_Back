@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 class User
@@ -16,25 +17,32 @@ class User
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 50)]
+    #[ORM\Column(type: 'string',length: 50)]
+    #[Assert\NotBlank()]
+    #[Assert\Length(min:2,max:50)]
     private ?string $firstName = null;
 
-    #[ORM\Column(length: 50)]
+    #[ORM\Column(type: 'string',length: 50)]
+    #[Assert\NotBlank()]
+    #[Assert\Length(min:2,max:50)]
     private ?string $lastName = null;
 
-    #[ORM\Column(length: 50)]
+    #[ORM\Column(length: 255, unique:true)]
+    #[Assert\Email()]
     private ?string $email = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank()]
     private ?string $password = null;
 
-    #[ORM\Column(type: Types::ARRAY)]
-    private array $role = [];
+    #[ORM\Column (type:'json')]
+    #[Assert\NotNull()]
+    private array $roles = [];
 
     #[ORM\Column(length: 50)]
     private ?string $accountStatus = null;
 
-    #[ORM\OneToOne(mappedBy: 'cartUser', cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(mappedBy: 'cartUser')]
     private ?Cart $cartUser = null;
 
     #[ORM\OneToMany(mappedBy: 'orderUser', targetEntity: Order::class)]
@@ -106,14 +114,18 @@ class User
         return $this;
     }
 
-    public function getRole(): array
+    public function getRoles(): array
     {
-        return $this->role;
+        $roles = $this->roles;
+        // garantir que chaque utilisateur a au moins ROLE_USER
+        $roles[] = 'ROLE_USER';
+
+        return array_unique($roles);
     }
 
-    public function setRole(array $role): static
+    public function setRoles(array $roles): self
     {
-        $this->role = $role;
+        $this->roles = $roles;
 
         return $this;
     }

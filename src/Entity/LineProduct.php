@@ -17,8 +17,8 @@ class LineProduct
     #[ORM\Column]
     private ?int $quantity = null;
 
-    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: '0')]
-    private ?string $unitPrice = null;
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
+    private ?float $unitPrice = null;
 
     #[ORM\ManyToOne(inversedBy: 'lineProducts')]
     #[ORM\JoinColumn(nullable: false)]
@@ -50,9 +50,9 @@ class LineProduct
         return $this->unitPrice;
     }
 
-    public function setUnitPrice(string $unitPrice): static
+    public function setUnitPrice(float $unitPrice): static
     {
-        $this->unitPrice = $unitPrice;
+        $this->unitPrice = sprintf("%.2f",$unitPrice);
 
         return $this;
     }

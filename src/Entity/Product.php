@@ -16,17 +16,17 @@ class Product
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(type: 'string', length: 255)]
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
     private ?string $reference = null;
 
-    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: '0')]
-    private ?string $price = null;
+    #[ORM\Column(type: 'decimal', precision: 10, scale: 2)]
+    private ?float $price;
 
-    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: '0')]
-    private ?string $taxe = null;
+    #[ORM\Column(type: 'decimal', precision: 10, scale: 2)]
+    private ?float $taxe = null;
 
     #[ORM\Column(length: 255)]
     private ?string $description = null;
@@ -106,9 +106,9 @@ class Product
         return $this->price;
     }
 
-    public function setPrice(string $price): static
+    public function setPrice(float $price): static
     {
-        $this->price = $price;
+        $this->price = sprintf("%.2f", $price);
 
         return $this;
     }
@@ -118,9 +118,9 @@ class Product
         return $this->taxe;
     }
 
-    public function setTaxe(string $taxe): static
+    public function setTaxe(float $taxe): static
     {
-        $this->taxe = $taxe;
+        $this->taxe = sprintf("%.2f", $taxe);
 
         return $this;
     }
