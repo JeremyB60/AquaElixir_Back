@@ -8,42 +8,56 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-class User
+class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private ?int $id = null;
+    private ?int $id;
 
     #[ORM\Column(type: 'string',length: 50)]
     #[Assert\NotBlank()]
     #[Assert\Length(min:2,max:50)]
-    private ?string $firstName = null;
+    private ?string $firstName;
 
     #[ORM\Column(type: 'string',length: 50)]
     #[Assert\NotBlank()]
     #[Assert\Length(min:2,max:50)]
-    private ?string $lastName = null;
+    private ?string $lastName;
 
-    #[ORM\Column(length: 255, unique:true)]
+    #[ORM\Column(type: 'string', length: 180, unique: true)]
     #[Assert\Email()]
-    private ?string $email = null;
+    private ?string $email;
 
+    /**
+     * @var string The hashed password
+     */
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank()]
-    private ?string $password = null;
+    #[Assert\Length(min: 8)]
+    private ?string $password;
 
     #[ORM\Column (type:'json')]
     #[Assert\NotNull()]
     private array $roles = [];
 
     #[ORM\Column(length: 50)]
-    private ?string $accountStatus = null;
+    private ?string $accountStatus = 'active';
 
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $resetToken = null;
+
+    #[ORM\Column(type: 'string',nullable: true)]
+    private $confirmationToken;
+
+
+    //Relations
     #[ORM\OneToOne(mappedBy: 'cartUser')]
-    private ?Cart $cartUser = null;
+    private ?Cart $cartUser;
 
     #[ORM\OneToMany(mappedBy: 'orderUser', targetEntity: Order::class)]
     private Collection $orderUser;
@@ -95,25 +109,18 @@ class User
         return $this->email;
     }
 
-    public function setEmail(string $email): static
+    public function setEmail(string $email): self
     {
         $this->email = $email;
 
         return $this;
     }
 
-    public function getPassword(): ?string
-    {
-        return $this->password;
-    }
+    
 
-    public function setPassword(string $password): static
-    {
-        $this->password = $password;
-
-        return $this;
-    }
-
+    /**
+     * @see UserInterface
+     */
     public function getRoles(): array
     {
         $roles = $this->roles;
@@ -142,6 +149,57 @@ class User
         return $this;
     }
 
+    /**
+     * Get the value of resetToken
+     */
+    public function getResetToken(): ?string
+    {
+        return $this->resetToken;
+    }
+
+    /**
+     * Set the value of resetToken
+     */
+    public function setResetToken(?string $resetToken): self
+    {
+        $this->resetToken = $resetToken;
+
+        return $this;
+    }
+
+    public function getConfirmationToken(): ?string
+    {
+        return $this->confirmationToken;
+    }
+
+    public function setConfirmationToken(string $confirmationToken): self
+    {
+        $this->confirmationToken = $confirmationToken;
+
+        return $this;
+    }
+    
+    /**
+     * A visual identifier that represents this user.
+     *
+     * @see UserInterface
+     */
+    public function getUserIdentifier(): string
+    {
+        return (string) $this->email;
+    }
+
+    public function  getUsername(): string
+    {
+        return $this->getUserIdentifier();
+    }
+    
+    public function eraseCredentials()
+    {
+        // Remove sensitive data from the user
+        // $this->plainPassword = null;
+    }
+    
     public function getCartUser(): ?Cart
     {
         return $this->cartUser;
@@ -245,6 +303,25 @@ class User
                 $userAddress->setUserAddress(null);
             }
         }
+
+        return $this;
+    }
+
+
+    /**
+     * Get the value of password
+     */
+    public function getPassword(): ?string
+    {
+        return $this->password;
+    }
+
+    /**
+     * Set the value of password
+     */
+    public function setPassword(?string $password): self
+    {
+        $this->password = $password;
 
         return $this;
     }

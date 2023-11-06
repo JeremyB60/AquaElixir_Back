@@ -1,3 +1,9 @@
 framework:
     mailer:
-        dsn: '%env(MAILER_DSN)%'
+        dsn: 'smtp://localhost:1025'
+
+#when@dev:
+#    framework:
+#        mailer:
+#            envelope:
+#                recipients: ['aquaelixir@example.com']
