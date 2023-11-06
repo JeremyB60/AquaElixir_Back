@@ -97,7 +97,7 @@ public function register(Request $request, UserService $userService,
     }
 
 /**
- * @Route('/api/reset-password', name: 'reset_password', methods: ['POST'])
+ * @Route('/api/reset-password', name: 'reset_password', methods: ['GET', 'POST'])
  */
     public function resetPassword(Request $request,
      UserService $userService, MailerInterface $mailer,

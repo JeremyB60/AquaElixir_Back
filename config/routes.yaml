@@ -31,7 +31,7 @@ app_logout:
 reset_password:
     path: /api/reset-password
     controller: App\Controller\UserController::resetPassword
-    methods: [POST]
+    methods: [POST, GET]
 
 # Suppression de compte
 delete_account:

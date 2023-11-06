@@ -41,7 +41,7 @@ security:
         - { path: ^/api/login, roles: PUBLIC_ACCESS }
         - { path: ^/api/register, roles: PUBLIC_ACCESS }
         - { path: ^/api/login_check, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/api/reset_password, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/reset_password, roles: IS_AUTHENTICATED_ANONYMOUSLY, methods: [GET, POST]  }
         - { path: ^/api,       roles: IS_AUTHENTICATED_FULLY }
 
 when@test:
