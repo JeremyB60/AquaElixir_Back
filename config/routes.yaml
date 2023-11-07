@@ -27,11 +27,17 @@ api_login_check:
 app_logout:
     path: /api/logout
 
-# Reinitialisation mot de passe
+# Reinitialisation mot de passe- envoi de mot de passe
 reset_password:
     path: /api/reset-password
     controller: App\Controller\UserController::resetPassword
     methods: [POST, GET]
+
+# Reinitialisation mot de passe - avec nouveau mot de passe
+reset_password_from_link:
+    path: /api/reset-password/{token}
+    controller: App\Controller\YourController::resetPasswordFromLink
+    methods: [GET] 
 
 # Suppression de compte
 delete_account:

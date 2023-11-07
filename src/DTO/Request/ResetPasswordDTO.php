@@ -17,10 +17,17 @@ class ResetPasswordDTO
     {
         $data = json_decode($request->getContent(), true);
 
-        // Validez et définissez les propriétés du DTO ici.
         $resetPasswordDTO = new self();
-        $resetPasswordDTO->email = $data['email'];
+
+        // Vérifiez si la clé 'email' existe dans le tableau $data avant d'y accéder
+        if (isset($data['email'])) {
+            $resetPasswordDTO->email = $data['email'];
+        } else {
+            // Gère le cas où 'email' n'est pas défini,
+            // éventuellement en lançant une exception ou en renvoyant une réponse d'erreur.
+        }
 
         return $resetPasswordDTO;
     }
+    
 }

@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\Entity\User;
 use Psr\Log\LoggerInterface;
+use App\Service\PasswordGenerator;
 use App\DTO\Request\LoginUserDTO;
 use App\DTO\Request\RegisterUserDTO;
 use App\DTO\Request\ResetPasswordDTO;
@@ -26,17 +27,20 @@ class UserService
     private $mailer;
     private $urlGenerator;
     private $logger;
+    private $passwordGenerator;
 
 
     public function __construct(UserPasswordHasherInterface $passwordHasher,
     EntityManagerInterface $entityManager,
-    MailerInterface $mailer, UrlGeneratorInterface $urlGenerator, LoggerInterface $logger)
+    MailerInterface $mailer, UrlGeneratorInterface $urlGenerator, LoggerInterface $logger,
+     PasswordGenerator $passwordGenerator)
     {
         $this->passwordHasher = $passwordHasher;
         $this->entityManager = $entityManager;
         $this->mailer = $mailer;
         $this->urlGenerator = $urlGenerator;
         $this->logger = $logger;
+        $this->passwordGenerator = $passwordGenerator;
     }
 
     //Gestion d'inscription
@@ -164,7 +168,7 @@ class UserService
         return ServiceResult::createSuccess();
     }
 
-    // Gestion de reinitialisation de mot de passe
+    // Gestion d'envoi de reinitialisation de mot de passe
     public function resetPassword(ResetPasswordDTO $resetPasswordDTO,
      MailerInterface $mailer, UrlGeneratorInterface $urlGenerator): ServiceResult
     {
@@ -179,6 +183,9 @@ class UserService
         // Générer un jeton de réinitialisation unique
         $resetToken = bin2hex(random_bytes(32));
         $user->setResetToken($resetToken);
+
+        $this->entityManager->persist($user);
+        $this->entityManager->flush();
 
         //Vérifiez si le jeton a été défini
         if (!$user->getResetToken()) {
@@ -205,4 +212,33 @@ class UserService
         return ServiceResult::createSuccess('E-mail de réinitialisation du mot de passe envoyé.');
     }
 
+    // Gestion de reinitialisation de mot de passe
+    public function findUserByResetToken(string $resetToken): ?User
+    {
+        // Utilisez Doctrine pour rechercher l'utilisateur par le jeton de réinitialisation
+        return $this->entityManager->getRepository(User::class)->findOneBy(['resetToken' => $resetToken]);
+    }
+
+    public function resetUserPassword(User $user,): void
+    {
+        // Générez un nouveau mot de passe sécurisé en utilisant PasswordGenerator
+        $newPassword = $this->passwordGenerator->generateRandomPassword();
+
+        $newPasswordHash = $this->passwordHasher->hashPassword($user, $newPassword);
+
+        // Mettez à jour l'utilisateur dans la base de données avec le nouveau mot de passe
+        $user->setPassword($newPasswordHash);
+        $user->setResetToken(null); // Supprimez le jeton de réinitialisation
+        $this->entityManager->flush();
+
+        // Envoyer un e-mail au nouvel utilisateur
+        $email = (new Email())
+            ->from('aquaelixir@example.com')
+            ->to($user->getEmail())
+            ->subject('Nouveau mot de passe')
+            ->text('Votre nouveau mot de passe est : ' . $newPassword);
+
+        $this->mailer->send($email);
+
+    }
 }

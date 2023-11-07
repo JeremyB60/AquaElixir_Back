@@ -25,13 +25,18 @@ security:
                 check_path: /api/login_check
                 success_handler: lexik_jwt_authentication.handler.authentication_success
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
-            
+
             logout:
                 path: app_logout
             remember_me:
                 secret: '%kernel.secret%'
                 lifetime: 604800 # 1 semaine
-
+            
+        reset_password:
+            pattern: ^/api/reset-password
+            stateless: true
+            security: false
+            
         api:
             pattern: ^/api
             stateless: true
@@ -40,8 +45,8 @@ security:
     access_control:
         - { path: ^/api/login, roles: PUBLIC_ACCESS }
         - { path: ^/api/register, roles: PUBLIC_ACCESS }
-        - { path: ^/api/login_check, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/api/reset_password, roles: IS_AUTHENTICATED_ANONYMOUSLY, methods: [GET, POST]  }
+        - { path: ^/api/login_check, roles: PUBLIC_ACCESS }
+        - { path: ^/api/reset_password, roles: PUBLIC_ACCESS, methods: [GET, POST]  }
         - { path: ^/api,       roles: IS_AUTHENTICATED_FULLY }
 
 when@test:

@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Service\UserService;
+use App\Service\PasswordGenerator;
 use Psr\Log\LoggerInterface;
 use App\DTO\Request\LoginUserDTO;
 use Symfony\Component\Mime\Email;
@@ -33,10 +34,10 @@ class UserController extends AbstractController
     }
 
     /**
- * @Route('/api/register', name: 'register', methods: ['POST'])
- */
-public function register(Request $request, UserService $userService,
- ValidatorInterface $validator, MailerInterface $mailer, UrlGeneratorInterface $urlGenerator): JsonResponse
+    * @Route('/api/register', name: 'register', methods: ['POST'])
+    */
+    public function register(Request $request, UserService $userService,
+    ValidatorInterface $validator, MailerInterface $mailer, UrlGeneratorInterface $urlGenerator): JsonResponse
     {
         $registerUserDTO = RegisterUserDTO::createFromRequest($request);
         $violations = $validator->validate($registerUserDTO);
@@ -74,14 +75,16 @@ public function register(Request $request, UserService $userService,
                 return new JsonResponse(['message' => 'Failed to send confirmation email'], 400);
             }
 
-            return new JsonResponse(['message' => 'Registration successful. A confirmation email has been sent.'], 200);
-        } else {
-            return new JsonResponse(['message' => 'Registration failed'], 400);
+            return new JsonResponse(['message' => 'Registration successful.
+                A confirmation email has been sent.'], 200);
+            } else {
+                return new JsonResponse(['message' => 'Registration failed'], 400);
         }
     }
+    
 
    /**
-     * @Route('/api/login', name: 'login', methods: ['POST'])
+    * @Route('/api/login', name: 'login', methods: ['POST'])
      */
     public function login(Request $request, UserService $userService): JsonResponse
     {
@@ -96,9 +99,9 @@ public function register(Request $request, UserService $userService,
         }
     }
 
-/**
- * @Route('/api/reset-password', name: 'reset_password', methods: ['GET', 'POST'])
- */
+    /**
+     * @Route('/api/reset-password', name: 'reset_password', methods: ['GET', 'POST'])
+     */
     public function resetPassword(Request $request,
      UserService $userService, MailerInterface $mailer,
         UrlGeneratorInterface $urlGenerator, LoggerInterface $logger): JsonResponse
@@ -124,6 +127,26 @@ public function register(Request $request, UserService $userService,
         }
     }
 
+    
+    /**
+     * @Route('/api/reset-password/{token}', name: 'reset_password_from_link', methods: ['GET'])
+     */
+    public function resetPasswordFromLink(string $resetToken, UserService $userService): JsonResponse
+    {
+        // Recherchez l'utilisateur par le jeton de réinitialisation
+        $user = $userService->findUserByResetToken($resetToken);
+
+        if ($user) {
+            // Réinitialisez le mot de passe de l'utilisateur
+            $userService->resetUserPassword($user);
+
+            return new JsonResponse(['message' => 'Password reset successfully']);
+        }
+
+        return new JsonResponse(['message' => 'Password reset failed'], 400);
+    }
+
+
     /**
      * @Route('/api/logout', name: 'logout', methods: ['GET'])
      */
@@ -133,9 +156,10 @@ public function register(Request $request, UserService $userService,
         // pas besoin d'implémenter une logique personnalisée.
     }
 
-/**
- * @Route("/api/delete-account", name:"delete_account", methods:{"DELETE"})
- */
+
+    /**
+     * @Route("/api/delete-account", name:"delete_account", methods:{"DELETE"})
+     */
     public function deleteAccount(DeleteAccountDTO $deleteAccountDTO,
      EntityManagerInterface $entityManager, Security $security): JsonResponse
     {

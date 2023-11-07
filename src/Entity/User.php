@@ -48,7 +48,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 50)]
     private ?string $accountStatus = 'active';
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[ORM\Column(type: 'string', length: 64, nullable: true)]
     private ?string $resetToken = null;
 
     #[ORM\Column(type: 'string',nullable: true)]
@@ -75,6 +75,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->userAddress = new ArrayCollection();
     }
 
+    
     public function getId(): ?int
     {
         return $this->id;
@@ -115,8 +116,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
-
-    
 
     /**
      * @see UserInterface
