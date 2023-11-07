@@ -36,6 +36,11 @@ security:
             pattern: ^/api/reset-password
             stateless: true
             security: false
+
+        reset_password_from_link:
+            pattern: ^/api/reset-password/{token}
+            stateless: true
+            security: false
             
         api:
             pattern: ^/api
@@ -46,6 +51,7 @@ security:
         - { path: ^/api/login, roles: PUBLIC_ACCESS }
         - { path: ^/api/register, roles: PUBLIC_ACCESS }
         - { path: ^/api/login_check, roles: PUBLIC_ACCESS }
+        - { path: ^/api/reset_password, roles: PUBLIC_ACCESS, methods: [GET, POST]  }
         - { path: ^/api/reset_password, roles: PUBLIC_ACCESS, methods: [GET, POST]  }
         - { path: ^/api,       roles: IS_AUTHENTICATED_FULLY }
 

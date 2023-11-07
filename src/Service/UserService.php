@@ -172,11 +172,14 @@ class UserService
     public function resetPassword(ResetPasswordDTO $resetPasswordDTO,
      MailerInterface $mailer, UrlGeneratorInterface $urlGenerator): ServiceResult
     {
-        $user = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $resetPasswordDTO->email]);
+        $email = $resetPasswordDTO->email;
+
+        $this->logger->info('Attempting to reset password for email: ' . $email);
+
+        $user = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $email]);
 
         if (!$user) {
-            // Utilisez le journal pour enregistrer un message en cas d'échec
-            $this->logger->error('L\'utilisateur avec l\'e-mail ' . $resetPasswordDTO->email . ' n\'a pas été trouvé.');
+            $this->logger->error('User with email ' . $email . ' not found.');
             throw new UserResetPasswordException('User not found');
         }
 
@@ -192,7 +195,7 @@ class UserService
             throw new UserResetPasswordException('Failed to generate the reset token');
         }
         // Générer l'URL de réinitialisation du mot de passe
-        $resetUrl = $urlGenerator->generate('reset_password',
+        $resetUrl = $urlGenerator->generate('reset_password_from_link',
          ['token' => $resetToken], UrlGeneratorInterface::ABSOLUTE_URL);
 
         // Envoyer un e-mail à l'utilisateur avec l'URL de réinitialisation du mot de passe

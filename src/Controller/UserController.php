@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Service\UserService;
-use App\Service\PasswordGenerator;
 use Psr\Log\LoggerInterface;
 use App\DTO\Request\LoginUserDTO;
 use Symfony\Component\Mime\Email;
@@ -27,10 +26,12 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 class UserController extends AbstractController
 {
     private $entityManager;
+    private $logger;
 
-    public function __construct(EntityManagerInterface $entityManager)
+    public function __construct(EntityManagerInterface $entityManager, LoggerInterface $logger)
     {
         $this->entityManager = $entityManager;
+        $this->logger = $logger;
     }
 
     /**
@@ -129,12 +130,16 @@ class UserController extends AbstractController
 
     
     /**
-     * @Route('/api/reset-password/{token}', name: 'reset_password_from_link', methods: ['GET'])
+     * @Route('/api/reset-password/{token}', name: 'reset_password_from_link', methods: [GET, POST] )
      */
-    public function resetPasswordFromLink(string $resetToken, UserService $userService): JsonResponse
+    public function resetPasswordFromLink(string $token, UserService $userService,
+     LoggerInterface $logger): JsonResponse
     {
+        // Log the matched route and token for debugging
+        $this->logger->info('Matched route "reset_password_from_link" with token: ' . $token);
+
         // Recherchez l'utilisateur par le jeton de réinitialisation
-        $user = $userService->findUserByResetToken($resetToken);
+        $user = $userService->findUserByResetToken($token);
 
         if ($user) {
             // Réinitialisez le mot de passe de l'utilisateur
