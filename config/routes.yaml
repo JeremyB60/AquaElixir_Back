@@ -10,8 +10,8 @@ register:
 
 # Email de confirmation
 confirm_email:
-    path: /confirm-email/{token}
-    controller: App\Controller\EmailConfirmationController::confirmEmail
+    path: /api/confirm-email/{token}
+    controller: App\Controller\UserController::confirmEmail
     methods: [GET]
 
 # Connexion user

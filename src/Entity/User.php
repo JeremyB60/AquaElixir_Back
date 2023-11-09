@@ -45,13 +45,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Assert\NotNull()]
     private array $roles = [];
 
-    #[ORM\Column(length: 50)]
-    private ?string $accountStatus = 'active';
+    #[ORM\Column(length: 50, nullable: true)]
+    private ?string $accountStatus;
 
     #[ORM\Column(type: 'string', length: 64, nullable: true)]
     private ?string $resetToken = null;
 
-    #[ORM\Column(type: 'string',nullable: true)]
+    #[ORM\Column(type: "boolean")]
+    private $isEmailConfirmed;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $confirmationToken;
 
 
@@ -73,6 +76,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->orderUser = new ArrayCollection();
         $this->reviewUser = new ArrayCollection();
         $this->userAddress = new ArrayCollection();
+        $this->isEmailConfirmed = false;
+        $this->confirmationToken = bin2hex(random_bytes(32));
     }
 
     
@@ -166,12 +171,24 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public function setIsEmailConfirmed(bool $isEmailConfirmed): self
+    {
+        $this->isEmailConfirmed = $isEmailConfirmed;
+
+        return $this;
+    }
+
+    public function getIsEmailConfirmed(): bool
+    {
+        return $this->isEmailConfirmed;
+    }
+
     public function getConfirmationToken(): ?string
     {
         return $this->confirmationToken;
     }
 
-    public function setConfirmationToken(string $confirmationToken): self
+    public function setConfirmationToken(?string $confirmationToken): self
     {
         $this->confirmationToken = $confirmationToken;
 

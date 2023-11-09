@@ -31,7 +31,17 @@ security:
             remember_me:
                 secret: '%kernel.secret%'
                 lifetime: 604800 # 1 semaine
-            
+
+        register:
+            pattern: ^/api/register
+            stateless: true
+            security: false
+
+        confirm_email:
+            pattern: ^/api/confirm-email/{token}
+            stateless: true
+            security: false
+
         reset_password:
             pattern: ^/api/reset-password
             stateless: true
@@ -41,7 +51,7 @@ security:
             pattern: ^/api/reset-password/{token}
             stateless: true
             security: false
-            
+         
         api:
             pattern: ^/api
             stateless: true
@@ -50,6 +60,7 @@ security:
     access_control:
         - { path: ^/api/login, roles: PUBLIC_ACCESS }
         - { path: ^/api/register, roles: PUBLIC_ACCESS }
+        - { path: ^/api/confirm-email, roles: PUBLIC_ACCESS, methods: [GET] }
         - { path: ^/api/login_check, roles: PUBLIC_ACCESS }
         - { path: ^/api/reset_password, roles: PUBLIC_ACCESS, methods: [GET, POST]  }
         - { path: ^/api/reset_password, roles: PUBLIC_ACCESS, methods: [GET, POST]  }

@@ -11,32 +11,31 @@ class RegisterUserDTO
      * @Assert\NotBlank()
      * @Assert\Length(min=2, max=50)
      */
-    public ?string $firstName = null;
+    public string $firstName;
 
     /**
      * @Assert\NotBlank()
      * @Assert\Length(min=2, max=50)
      */
-    public ?string $lastName = null;
+    public string $lastName;
 
     /**
      * @Assert\NotBlank()
      * @Assert\Email()
      */
-    public ?string $email = null;
+    public string $email;
 
     /**
      * @Assert\NotBlank()
      * @Assert\Length(min=8)
      */
-    public ?string $password = null;
-
+    public string $password;
 
     public function __construct(
-        ?string $firstName = null,
-        ?string $lastName = null,
-        ?string $email = null,
-        ?string $password = null
+        string $firstName,
+        string $lastName,
+        string $email,
+        string $password
     ) {
         $this->firstName = $firstName;
         $this->lastName = $lastName;
@@ -48,14 +47,14 @@ class RegisterUserDTO
     {
         $data = json_decode($request->getContent(), true);
 
-        // Validez et définissez les propriétés du DTO ici.
-        $registerUserDTO = new self();
-        $registerUserDTO->firstName = $data['firstName'];
-        $registerUserDTO->lastName = $data['lastName'];
-        $registerUserDTO->email = $data['email'];
-        $registerUserDTO->password = $data['password'];
-
-        return $registerUserDTO;
+        // Validate and set the DTO properties here.
+        return new self(
+            $data['firstName'],
+            $data['lastName'],
+            $data['email'],
+            $data['password']
+        );
     }
-
 }
+
+

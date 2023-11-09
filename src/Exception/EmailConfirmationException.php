@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Exception;
 
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -10,10 +9,13 @@ class EmailConfirmationException extends HttpException
     private $recipientEmail;
 
     public function __construct($recipientEmail,
-     $message = 'Failed to send email confirmation',
+     $message = 'Échec de l\'envoi de l\'e-mail de confirmation',
       $code = 0, \Throwable $previous = null)
     {
-        parent::__construct($message, $code, $previous);
+        // Assurez-vous que $code est un entier
+        $code = (int) $code;
+
+        parent::__construct(500, $message, $previous, [], $code);
         $this->recipientEmail = $recipientEmail;
     }
 
@@ -22,4 +24,3 @@ class EmailConfirmationException extends HttpException
         return $this->recipientEmail;
     }
 }
-

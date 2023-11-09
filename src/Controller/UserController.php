@@ -34,55 +34,51 @@ class UserController extends AbstractController
         $this->logger = $logger;
     }
 
+//....................................REGISTER................................................................
+
     /**
-    * @Route('/api/register', name: 'register', methods: ['POST'])
-    */
-    public function register(Request $request, UserService $userService,
-    ValidatorInterface $validator, MailerInterface $mailer, UrlGeneratorInterface $urlGenerator): JsonResponse
+ * @Route('/api/register', name: 'register', methods: ['POST'])
+ */
+    public function register(Request $request, UserService $userService, ValidatorInterface $validator): JsonResponse
     {
         $registerUserDTO = RegisterUserDTO::createFromRequest($request);
         $violations = $validator->validate($registerUserDTO);
 
         if (count($violations) > 0) {
-            // Si la validation échoue, retournez un message d'erreur avec les violations.
+            // Si la validation échoue, renvoyez un message d'erreur avec les violations.
             return new JsonResponse(['message' => 'Validation failed', 'errors' => $violations], 400);
         }
 
-        // Si la validation réussit, appelez le service UserService pour créer le compte.
+        // Si la validation réussit, on appelle le UserService pour créer le compte.
         $result = $userService->registerUser($registerUserDTO, $validator);
 
         if ($result->isSuccess()) {
-            // Générez un jeton unique pour la confirmation d'e-mail
-            $confirmationToken = bin2hex(random_bytes(32));
+            return new JsonResponse(['message' => 'Registration successful. A confirmation email has been sent.'], 200);
+        } else {
+            return new JsonResponse(['message' => 'Registration failed'], 400);
+        }
+    }
 
-            // Associez le jeton à l'utilisateur (dans UserService::registerUser)
-            $userService->associateConfirmationToken($result->getData(), $confirmationToken);
 
-            // Générez le lien de confirmation
-            $confirmationUrl = $urlGenerator->generate
-            ('confirm_email', ['token' => $confirmationToken], UrlGeneratorInterface::ABSOLUTE_URL);
+     /**
+     * @Route("/api/confirm-email/{token}", name="confirm_email", methods={"GET"})
+     */
+    public function confirmEmail(string $token, UserService $userService, LoggerInterface $logger): JsonResponse
+    {
+        $result = $userService->confirmEmail($token, $logger);
 
-            // Envoyez un e-mail de confirmation
-            $email = (new Email())
-                ->from('aquaelixir@example.com')
-                ->to($registerUserDTO->email)
-                ->subject('Confirmation d\'e-mail')
-                ->html("Cliquez sur le lien suivant pour confirmer votre adresse e-mail:
-                    <a href='{$confirmationUrl}'>Confirmer l'e-mail</a>");
-
-            try {
-                $mailer->send($email);
-            } catch (\Exception $e) {
-                return new JsonResponse(['message' => 'Failed to send confirmation email'], 400);
-            }
-
-            return new JsonResponse(['message' => 'Registration successful.
-                A confirmation email has been sent.'], 200);
-            } else {
-                return new JsonResponse(['message' => 'Registration failed'], 400);
+        if ($result->isSuccess()) {
+            // Add a flash message for the user
+            $this->addFlash('success', 'E-mail confirmé. Inscription réussi. Vous pouvez maintenant vous connecter.');
+    
+            // Redirect to the login page
+          //  return $this->redirectToRoute('login');
+        //} else {
+            return new JsonResponse(['message' => 'Email confirmation failed'], 400);
         }
     }
     
+//....................................LOGIN............................................................
 
    /**
     * @Route('/api/login', name: 'login', methods: ['POST'])
@@ -99,6 +95,8 @@ class UserController extends AbstractController
             return new JsonResponse(['message' => 'Login failed'], 401);
         }
     }
+
+//....................................RESET PASSEWORD...................................................
 
     /**
      * @Route('/api/reset-password', name: 'reset_password', methods: ['GET', 'POST'])
@@ -127,7 +125,6 @@ class UserController extends AbstractController
             return new JsonResponse(['message' => 'Password reset failed'], 400);
         }
     }
-
     
     /**
      * @Route('/api/reset-password/{token}', name: 'reset_password_from_link', methods: [GET, POST] )
@@ -151,6 +148,7 @@ class UserController extends AbstractController
         return new JsonResponse(['message' => 'Password reset failed'], 400);
     }
 
+//....................................LOGOUT...................................................
 
     /**
      * @Route('/api/logout', name: 'logout', methods: ['GET'])
@@ -161,6 +159,7 @@ class UserController extends AbstractController
         // pas besoin d'implémenter une logique personnalisée.
     }
 
+//....................................DELETE ACCOUNT...................................................
 
     /**
      * @Route("/api/delete-account", name:"delete_account", methods:{"DELETE"})
