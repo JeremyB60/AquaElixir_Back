@@ -9,6 +9,7 @@ use App\DTO\Request\RegisterUserDTO;
 use App\DTO\Request\DeleteAccountDTO;
 use App\DTO\Request\ResetPasswordDTO;
 use App\DTO\Request\ModifyAccountDTO;
+use Psr\Cache\CacheItemPoolInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Mailer\MailerInterface;
@@ -16,11 +17,11 @@ use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Security\Core\Exception\LogoutException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class UserController extends AbstractController
 {
@@ -223,17 +224,35 @@ class UserController extends AbstractController
         return new JsonResponse(['message' => 'Votre compte a été supprimé avec succès!'], JsonResponse::HTTP_OK);
     }
 
-    //................................LOGOUT...................................................
-
+    //............................LOGOUT......................................
+  
     /**
-     * @Route('/api/logout', name: 'logout', methods: ['GET'])
-     */
-    public function logout(Request $request, AuthenticationUtils $authenticationUtils):Response
+ * @Route('/api/logout', name: 'logout', methods: ['GET'])
+ */
+    public function logout(Request $request, TokenStorageInterface $tokenStorage,
+     CacheItemPoolInterface $cache): Response
     {
-        // Cette action sert uniquement à déclencher la déconnexion,
-        // pas besoin d'implémenter une logique personnalisée.
+        $token = $request->headers->get('Authorization');
+
+        if ($token) {
+            // Extract the actual token value from the "Bearer" prefix
+            $token = str_replace('Bearer ', '', $token);
+
+            // Invalidate the token by adding it to the blacklist
+            $cacheItem = $cache->getItem($token);
+            $cacheItem->set(true);
+            $cacheItem->expiresAfter(86400);
+
+            // Save the cache item
+            $cache->saveDeferred($cacheItem);
+            $cache->commit();
+        }
+
+        // Clear the security token
+        $tokenStorage->setToken(null);
 
         return new Response('Logout successful', Response::HTTP_OK);
     }
+
   
 }

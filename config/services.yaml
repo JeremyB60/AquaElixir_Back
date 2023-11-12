@@ -20,8 +20,19 @@ services:
             $mailer: '@Symfony\Component\Mailer\MailerInterface'
             $urlGenerator: '@Symfony\Component\Routing\Generator\UrlGeneratorInterface'
             $validator: '@Symfony\Component\Validator\Validator\ValidatorInterface'
+            
     App\Service\PasswordGenerator:
-        arguments: []  
+        arguments: []
+
+    App\Service\TokenBlacklistService:
+        arguments:
+            $cache: '@cache.app'
+
+    App\EventSubscriber\LogoutSubscriber:
+        arguments:
+            $tokenBlacklistService: '@App\Service\TokenBlacklistService'
+        tags:
+            - { name: 'kernel.event_subscriber' }  
             
     App\:
         resource: '../src/'
