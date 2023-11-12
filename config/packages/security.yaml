@@ -64,6 +64,9 @@ security:
         - { path: ^/api/login_check, roles: PUBLIC_ACCESS }
         - { path: ^/api/reset_password, roles: PUBLIC_ACCESS, methods: [GET, POST]  }
         - { path: ^/api/reset_password, roles: PUBLIC_ACCESS, methods: [GET, POST]  }
+        - { path: ^/api/delete-account, roles: [ROLE_USER], methods: [DELETE] }
+        - { path: ^/api/modify-account, roles: [ROLE_USER], methods: [PUT] }
+        - { path: ^/api/logout, roles: [ROLE_USER], methods: [GET] }
         - { path: ^/api,       roles: IS_AUTHENTICATED_FULLY }
 
 when@test:

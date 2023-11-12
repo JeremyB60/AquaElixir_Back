@@ -8,6 +8,7 @@ use App\Service\PasswordGenerator;
 use App\DTO\Request\LoginUserDTO;
 use App\DTO\Request\RegisterUserDTO;
 use App\DTO\Request\ResetPasswordDTO;
+use App\DTO\Request\ModifyAccountDTO;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Mailer\MailerInterface;
@@ -18,7 +19,7 @@ use App\Exception\UserResetPasswordException;
 use App\Exception\EmailSendException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+
 
 
 class UserService
@@ -264,4 +265,61 @@ class UserService
         $this->mailer->send($email);
 
     }
+
+    //..........................MODIFY ACCOUNT.............................................
+    // Gestion de modification de compte
+    public function modifyAccount(User $user, ModifyAccountDTO $modifyAccountDTO): ServiceResult
+    {
+        try {
+            $this->logger->debug('DTO Data: ' . print_r($modifyAccountDTO, true));
+
+        // Verify the current password before allowing the change
+        if ($modifyAccountDTO->getCurrentPassword() !== null) {
+            $currentPassword = $modifyAccountDTO->getCurrentPassword();
+
+            // Log or print the current password and hashed current password
+            $this->logger->debug('Current Password: ' . $currentPassword);
+            $this->logger->debug('Hashed Current Password: ' . $user->getPassword());
+
+            // Check if the provided current password matches the actual current password
+            if (!$this->passwordHasher->isPasswordValid($user, $currentPassword)) {
+                // Log or print the hashed password stored in the database
+                $this->logger->debug('Hashed Password in Database: ' . $user->getPassword());
+
+                return ServiceResult::createError('Invalid current password', 401);
+            }
+        }
+
+            // Update the user's account based on the provided data
+            if ($modifyAccountDTO->getFirstName() !== null) {
+                $user->setFirstName($modifyAccountDTO->getFirstName());
+            }
+    
+            if ($modifyAccountDTO->getLastName() !== null) {
+                $user->setLastName($modifyAccountDTO->getLastName());
+            }
+    
+            if ($modifyAccountDTO->getEmail() !== null) {
+                $user->setEmail($modifyAccountDTO->getEmail());
+            }
+    
+            if ($modifyAccountDTO->getPassword() !== null) {
+                // You may want to handle password hashing here
+                $hashedPassword = $this->passwordHasher->hashPassword($user, $modifyAccountDTO->getPassword());
+                $user->setPassword($hashedPassword);
+            }
+    
+            // Persist changes to the database
+            $this->entityManager->persist($user);
+            $this->entityManager->flush();
+    
+            return ServiceResult::createSuccess('Account modified successfully');
+        } catch (\Exception $e) {
+            $this->logger->error('Error modifying account: ' . $e->getMessage());
+    
+            // Return an error response or throw an exception if necessary
+            return ServiceResult::createError('Failed to modify the account', 500);
+         }
+    }
+
 }

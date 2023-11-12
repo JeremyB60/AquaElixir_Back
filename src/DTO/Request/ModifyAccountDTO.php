@@ -2,20 +2,49 @@
 
 namespace App\DTO\Request;
 
-use App\Entity\User;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Validator\Constraints as Assert;
 
 class ModifyAccountDTO
 {
-    private $firstName;
-    private $lastName;
-    private $email;
+    /**
+     * @Assert\NotBlank(message="First name is required")
+     * @Assert\Length(min=2, max=50
+     */
+    private ?string $firstName;
 
-     public function getFirstName(): ?string
+    /**
+     * @Assert\NotBlank(message="Last name is required")
+     * @Assert\Length(min=2, max=50
+     */
+    private ?string $lastName;
+
+    /**
+     * @Assert\Email(message="Invalid email format")
+     * @Assert\Email()
+     */
+    private ?string $email;
+
+    /**
+     * @Assert\NotBlank(message="Password is required")
+     * @Assert\Password()
+     * @Assert\Length(min=8)
+     */
+    private ?string $password;
+
+    /**
+     * @Assert\NotBlank(message="Current password is required for modification")
+     * @Assert\Password()
+     * @Assert\Length(min=8)
+     */
+    private ?string $currentPassword;
+
+    public function getFirstName(): ?string
     {
         return $this->firstName;
     }
 
-    public function setFirstName(string $firstName): static
+    public function setFirstName(?string $firstName): static
     {
         $this->firstName = $firstName;
 
@@ -27,7 +56,7 @@ class ModifyAccountDTO
         return $this->lastName;
     }
 
-    public function setLastName(string $lastName): static
+    public function setLastName(?string $lastName): static
     {
         $this->lastName = $lastName;
 
@@ -39,10 +68,62 @@ class ModifyAccountDTO
         return $this->email;
     }
 
-    public function setEmail(string $email): self
+    public function setEmail(?string $email): self
     {
         $this->email = $email;
 
         return $this;
+    }
+
+    public function getPassword(): ?string
+    {
+        return $this->password;
+    }
+
+    public function setPassword(?string $password): self
+    {
+        $this->password = $password;
+
+        return $this;
+    }
+
+    public function getCurrentPassword(): ?string
+    {
+        return $this->currentPassword;
+    }
+
+    public function setCurrentPassword(?string $currentPassword): self
+    {
+        $this->currentPassword = $currentPassword;
+
+        return $this;
+    }
+
+    public function __construct(
+        ?string $firstName,
+        ?string $lastName,
+        ?string $email,
+        ?string $password,
+        ?string $currentPassword
+    ) {
+        $this->firstName = $firstName;
+        $this->lastName = $lastName;
+        $this->email = $email;
+        $this->password = $password;
+        $this->currentPassword = $currentPassword;
+    }
+    
+
+    public static function createFromRequest(Request $request): ModifyAccountDTO
+    {
+        $data = json_decode($request->getContent(), true);
+
+        return new self(
+            $data['firstName'] ?? null,
+            $data['lastName'] ?? null,
+            $data['email'] ?? null,
+            $data['password'] ?? null,
+            $data['currentPassword'] ?? null
+        );
     }
 }

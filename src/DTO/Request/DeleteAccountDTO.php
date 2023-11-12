@@ -2,21 +2,29 @@
 
 namespace App\DTO\Request;
 
-use App\Entity\User;
+use Symfony\Component\Validator\Constraints as Assert;
 
 class DeleteAccountDTO
 {
-    private $password; // On inclure d'autres propriétés nécessaires
+    /**
+     * @Assert\NotBlank(message="Password is required")
+     */
+    private string $password;
 
-    // Getters et setters pour les propriétés
-
-    public function isDataValid(User $user): bool
+    public function __construct(string $password)
     {
-        // On peut implémentez une logique pour comparer les données fournies avec les données utilisateur.
-        // Par exemple, vérifiez si le mot de passe fourni correspond au mot de passe de l'utilisateur.
-
-        return password_verify($this->password, $user->getPassword());
+        $this->password = $password;
     }
-    
-}
 
+    public function getPassword(): string
+    {
+        return $this->password;
+    }
+
+    public function isDataValid(): bool
+    {
+        // You might want to add additional validation logic here if needed
+        // For now, it checks if the password is not empty
+        return !empty($this->password);
+    }
+}

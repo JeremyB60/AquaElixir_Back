@@ -18,14 +18,11 @@ confirm_email:
 api_login_check:
     path: /api/login_check
 
-#login
-#    path: /api/login
-#    controller: App\Controller\UserController::login
-#    methods: [POST]
-
 # Deconnexion user
-app_logout:
+logout:
     path: /api/logout
+    controller: 'App\Controller\UserController::logout'
+    methods: ['GET']
 
 # Reinitialisation mot de passe- envoi de mot de passe
 reset_password:
@@ -38,7 +35,6 @@ reset_password_from_link:
     path: /api/reset-password/{token}
     controller: App\Controller\UserController::resetPasswordFromLink
     methods: [GET, POST]
- 
 
 # Suppression de compte
 delete_account:
@@ -50,4 +46,4 @@ delete_account:
 modify_account:
     path: /api/modify-account
     controller: App\Controller\UserController::modifyAccount
-    methods: [PATCH]
+    methods: [PUT]

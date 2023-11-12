@@ -5,7 +5,6 @@ namespace App\Controller;
 use App\Service\UserService;
 use Psr\Log\LoggerInterface;
 use App\DTO\Request\LoginUserDTO;
-use Symfony\Component\Mime\Email;
 use App\DTO\Request\RegisterUserDTO;
 use App\DTO\Request\DeleteAccountDTO;
 use App\DTO\Request\ResetPasswordDTO;
@@ -13,7 +12,7 @@ use App\DTO\Request\ModifyAccountDTO;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Mailer\MailerInterface;
-use Symfony\Component\Security\Core\Security;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -34,7 +33,7 @@ class UserController extends AbstractController
         $this->logger = $logger;
     }
 
-//....................................REGISTER................................................................
+//..................................REGISTER.................................................
 
     /**
  * @Route('/api/register', name: 'register', methods: ['POST'])
@@ -61,7 +60,7 @@ class UserController extends AbstractController
 
 
      /**
-     * @Route("/api/confirm-email/{token}", name="confirm_email", methods={"GET"})
+     * @Route("/api/confirm-email/{token}", name:"confirm_email", methods:{"GET"})
      */
     public function confirmEmail(string $token, UserService $userService, LoggerInterface $logger): JsonResponse
     {
@@ -72,13 +71,13 @@ class UserController extends AbstractController
             $this->addFlash('success', 'E-mail confirmé. Inscription réussi. Vous pouvez maintenant vous connecter.');
     
             // Redirect to the login page
-          //  return $this->redirectToRoute('login');
-        //} else {
+            return $this->redirectToRoute('login');
+        } else {
             return new JsonResponse(['message' => 'Email confirmation failed'], 400);
         }
     }
     
-//....................................LOGIN............................................................
+//................................LOGIN...............................................
 
    /**
     * @Route('/api/login', name: 'login', methods: ['POST'])
@@ -96,7 +95,7 @@ class UserController extends AbstractController
         }
     }
 
-//....................................RESET PASSEWORD...................................................
+//................................RESET PASSEWORD...................................................
 
     /**
      * @Route('/api/reset-password', name: 'reset_password', methods: ['GET', 'POST'])
@@ -128,6 +127,7 @@ class UserController extends AbstractController
     
     /**
      * @Route('/api/reset-password/{token}', name: 'reset_password_from_link', methods: [GET, POST] )
+     * @IsGranted("ROLE_USER")
      */
     public function resetPasswordFromLink(string $token, UserService $userService,
      LoggerInterface $logger): JsonResponse
@@ -148,25 +148,18 @@ class UserController extends AbstractController
         return new JsonResponse(['message' => 'Password reset failed'], 400);
     }
 
-//....................................LOGOUT...................................................
+//...............................MODIFY ACCOUNT.......................................
 
     /**
-     * @Route('/api/logout', name: 'logout', methods: ['GET'])
+     * @Route("/api/modify-account", name:"modify_account", methods:{"PUT"})
+     * @IsGranted("ROLE_USER")
      */
-    public function logout(Request $request, AuthenticationUtils $authenticationUtils): void
-    {
-        // Cette action sert uniquement à déclencher la déconnexion,
-        // pas besoin d'implémenter une logique personnalisée.
-    }
-
-//....................................DELETE ACCOUNT...................................................
-
-    /**
-     * @Route("/api/delete-account", name:"delete_account", methods:{"DELETE"})
-     */
-    public function deleteAccount(DeleteAccountDTO $deleteAccountDTO,
-     EntityManagerInterface $entityManager, Security $security): JsonResponse
-    {
+    public function modifyAccount(
+        Request $request,
+        UserService $userService,  // Inject UserService
+        EntityManagerInterface $entityManager,
+        Security $security
+    ): JsonResponse {
         // Get the currently authenticated user
         $user = $security->getUser();
 
@@ -174,18 +167,73 @@ class UserController extends AbstractController
             return new JsonResponse(['message' => 'User not found'], Response::HTTP_NOT_FOUND);
         }
 
+        // Create ModifyAccountDTO from the request
+        $modifyAccountDTO = ModifyAccountDTO::createFromRequest($request);
+
+        // Delegate to UserService for account modification logic
+        $result = $userService->modifyAccount($user, $modifyAccountDTO);
+
+        if ($result->isSuccess()) {
+            return new JsonResponse(['message' => $result->getMessage()], Response::HTTP_OK);
+        } else {
+            return new JsonResponse(['message' => $result->getMessage()], Response::HTTP_BAD_REQUEST);
+        }
+    }
+
+//................................DELETE ACCOUNT...................................................
+
+    /**
+     * @Route("/api/delete-account", name:"delete_account", methods:{"DELETE"})
+     */
+    public function deleteAccount(Request $request,
+     EntityManagerInterface $entityManager, Security $security): JsonResponse
+    {
+        // Decode the JSON content of the request body
+        $data = json_decode($request->getContent(), true);
+
+        // Check if the 'password' key is present in the JSON data
+        if (!isset($data['password'])) {
+            return new JsonResponse(['message' => 'Password cannot be null'], JsonResponse::HTTP_BAD_REQUEST);
+        }
+
+        // Get the password from the JSON data
+        $password = $data['password'];
+
+        // Create DeleteAccountDTO with the password
+        $deleteAccountDTO = new DeleteAccountDTO($password);
+
         // Check if the provided data matches user data (e.g., password confirmation)
-        if (!$deleteAccountDTO->isDataValid($user)) {
-            return new JsonResponse(['message' => 'Unauthorized'], Response::HTTP_UNAUTHORIZED);
+        if (!$deleteAccountDTO->isDataValid()) {
+            error_log('Unauthorized: ' . var_export(['message' => 'Unauthorized'], true));
+            return new JsonResponse(['message' => 'Unauthorized'], JsonResponse::HTTP_UNAUTHORIZED);
         }
 
         // Implement the logic for deleting the user's account
+        $user = $security->getUser();
+
+        if (!$user) {
+            return new JsonResponse(['message' => 'User not found'], JsonResponse::HTTP_NOT_FOUND);
+        }
+
         $entityManager->remove($user);
         $entityManager->flush();
 
         // Invalidate the user's authentication token if needed
 
-        return new JsonResponse(null, Response::HTTP_NO_CONTENT);
+        return new JsonResponse(['message' => 'Votre compte a été supprimé avec succès!'], JsonResponse::HTTP_OK);
     }
-    
+
+    //................................LOGOUT...................................................
+
+    /**
+     * @Route('/api/logout', name: 'logout', methods: ['GET'])
+     */
+    public function logout(Request $request, AuthenticationUtils $authenticationUtils):Response
+    {
+        // Cette action sert uniquement à déclencher la déconnexion,
+        // pas besoin d'implémenter une logique personnalisée.
+
+        return new Response('Logout successful', Response::HTTP_OK);
+    }
+  
 }

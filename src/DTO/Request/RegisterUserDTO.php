@@ -8,25 +8,26 @@ use Symfony\Component\Validator\Constraints as Assert;
 class RegisterUserDTO
 {
     /**
-     * @Assert\NotBlank()
-     * @Assert\Length(min=2, max=50)
+     * @Assert\NotBlank(message="First name is required")
+     * @Assert\Length(min=2, max=50
      */
     public string $firstName;
 
     /**
-     * @Assert\NotBlank()
+     * @Assert\NotBlank(message="Last name is required")
      * @Assert\Length(min=2, max=50)
      */
     public string $lastName;
 
     /**
-     * @Assert\NotBlank()
+     * @Assert\Email(message="Invalid email format")
      * @Assert\Email()
      */
     public string $email;
 
     /**
-     * @Assert\NotBlank()
+     * @Assert\NotBlank(message="Password is required")
+     * @Assert\Password()
      * @Assert\Length(min=8)
      */
     public string $password;
@@ -56,5 +57,4 @@ class RegisterUserDTO
         );
     }
 }
-
 
