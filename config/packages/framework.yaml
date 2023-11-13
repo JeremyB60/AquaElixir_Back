@@ -2,6 +2,9 @@
 framework:
     #cache:
         #app: cache.app
+    
+    #cors:
+        #paths: ['^/api/']
 
     secret: '%env(APP_SECRET)%'
     #csrf_protection: true
