@@ -248,7 +248,7 @@ class UserController extends AbstractController
             $cache->commit();
         }
 
-        // Clear the security token
+        // Clear the security token after
         $tokenStorage->setToken(null);
 
         return new Response('Logout successful', Response::HTTP_OK);
