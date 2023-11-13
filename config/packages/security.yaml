@@ -1,29 +1,73 @@
 security:
+    enable_authenticator_manager: true
     # https://symfony.com/doc/current/security.html#registering-the-user-hashing-passwords
     password_hashers:
         Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
     # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
     providers:
-        users_in_memory: { memory: null }
+        app_user_provider:
+            entity:
+                class: App\Entity\User
+                property: email
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
-        main:
-            lazy: true
-            provider: users_in_memory
+        
+        #main:
+            #lazy: true
+            #provider: app_user_provider
 
-            # activate different ways to authenticate
-            # https://symfony.com/doc/current/security.html#the-firewall
+        login:
+            pattern: ^/api/login
+            stateless: true
+            json_login:
+                check_path: /api/login_check
+                success_handler: lexik_jwt_authentication.handler.authentication_success
+                failure_handler: lexik_jwt_authentication.handler.authentication_failure
 
-            # https://symfony.com/doc/current/security/impersonating_user.html
-            # switch_user: true
+            logout:
+                path: app_logout
+            remember_me:
+                secret: '%kernel.secret%'
+                lifetime: 604800 # 1 semaine
 
-    # Easy way to control access for large sections of your site
-    # Note: Only the *first* access control that matches will be used
+        register:
+            pattern: ^/api/register
+            stateless: true
+            security: false
+
+        confirm_email:
+            pattern: ^/api/confirm-email/{token}
+            stateless: true
+            security: false
+
+        reset_password:
+            pattern: ^/api/reset-password
+            stateless: true
+            security: false
+
+        reset_password_from_link:
+            pattern: ^/api/reset-password/{token}
+            stateless: true
+            security: false
+         
+        api:
+            pattern: ^/api
+            stateless: true
+            jwt: ~
+
     access_control:
-        # - { path: ^/admin, roles: ROLE_ADMIN }
-        # - { path: ^/profile, roles: ROLE_USER }
+        - { path: ^/api/login, roles: PUBLIC_ACCESS }
+        - { path: ^/api/register, roles: PUBLIC_ACCESS, methods: [POST]  }
+        - { path: ^/api/confirm-email, roles: PUBLIC_ACCESS, methods: [GET] }
+        - { path: ^/api/login_check, roles: PUBLIC_ACCESS }
+        - { path: ^/api/reset_password, roles: PUBLIC_ACCESS, methods: [GET, POST]  }
+        - { path: ^/api/reset_password, roles: PUBLIC_ACCESS, methods: [GET, POST]  }
+        - { path: ^/api/delete-account, roles: [ROLE_USER], methods: [DELETE] }
+        - { path: ^/api/modify-account, roles: [ROLE_USER], methods: [PUT] }
+        - { path: ^/api/logout, roles: [ROLE_USER], methods: [GET] }
+        - { path: ^/api,       roles: IS_AUTHENTICATED_FULLY }
 
 when@test:
     security:

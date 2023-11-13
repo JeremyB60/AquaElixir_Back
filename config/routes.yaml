@@ -1,3 +1,49 @@
 controllers:
     resource: ../src/Controller/
     type: attribute
+
+# Register user
+register:
+    path: /api/register
+    controller: App\Controller\UserController::register
+    methods: [POST]
+
+# Email de confirmation
+confirm_email:
+    path: /api/confirm-email/{token}
+    controller: App\Controller\UserController::confirmEmail
+    methods: [GET]
+
+# Connexion user
+api_login_check:
+    path: /api/login_check
+
+# Deconnexion user
+logout:
+    path: /api/logout
+    controller: 'App\Controller\UserController::logout'
+    methods: ['GET']
+
+# Reinitialisation mot de passe- envoi de mot de passe
+reset_password:
+    path: /api/reset-password
+    controller: App\Controller\UserController::resetPassword
+    methods: [GET, POST] 
+
+# Reinitialisation mot de passe - avec nouveau mot de passe
+reset_password_from_link:
+    path: /api/reset-password/{token}
+    controller: App\Controller\UserController::resetPasswordFromLink
+    methods: [GET, POST]
+
+# Suppression de compte
+delete_account:
+    path: /api/delete-account
+    controller: App\Controller\UserController::deleteAccount
+    methods: [DELETE]
+
+# Modification de compte
+modify_account:
+    path: /api/modify-account
+    controller: App\Controller\UserController::modifyAccount
+    methods: [PUT]
