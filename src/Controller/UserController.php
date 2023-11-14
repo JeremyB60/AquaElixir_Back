@@ -34,11 +34,11 @@ class UserController extends AbstractController
         $this->logger = $logger;
     }
 
-//..................................REGISTER.................................................
+    //..................................REGISTER.................................................
 
     /**
- * @Route('/api/register', name: 'register', methods: ['POST'])
- */
+     * @Route('/api/register', name: 'register', methods: ['POST'])
+     */
     public function register(Request $request, UserService $userService, ValidatorInterface $validator): JsonResponse
     {
         $registerUserDTO = RegisterUserDTO::createFromRequest($request);
@@ -53,35 +53,33 @@ class UserController extends AbstractController
         $result = $userService->registerUser($registerUserDTO, $validator);
 
         if ($result->isSuccess()) {
-            return new JsonResponse(['message' => 'Registration successful. A confirmation email has been sent.'], 200);
+            return new JsonResponse(['message' => 'Inscription réussie. Un e-mail de confirmation a été envoyé.'], 200);
         } else {
-            return new JsonResponse(['message' => 'Registration failed'], 400);
+            return new JsonResponse(['message' => 'Échec de l\'inscription'], 400);
         }
     }
 
 
-     /**
+    /**
      * @Route("/api/confirm-email/{token}", name:"confirm_email", methods:{"GET"})
      */
     public function confirmEmail(string $token, UserService $userService, LoggerInterface $logger): JsonResponse
     {
         $result = $userService->confirmEmail($token, $logger);
-
-        if ($result->isSuccess()) {
-            // Add a flash message for the user
-            $this->addFlash('success', 'E-mail confirmé. Inscription réussi. Vous pouvez maintenant vous connecter.');
     
-            // Redirect to the login page
+        if ($result->isSuccess()) {
+            $this->addFlash('success', 'E-mail confirmé. Inscription réussie. Vous pouvez maintenant vous connecter.');
             return $this->redirectToRoute('login');
         } else {
-            return new JsonResponse(['message' => 'Email confirmation failed'], 400);
+            return new JsonResponse(['message' => 'Email confirmation failed'], 400, [], true);
         }
     }
     
-//................................LOGIN...............................................
 
-   /**
-    * @Route('/api/login', name: 'login', methods: ['POST'])
+    //................................LOGIN...............................................
+
+    /**
+     * @Route('/api/login', name: 'login', methods: ['POST'])
      */
     public function login(Request $request, UserService $userService): JsonResponse
     {
@@ -96,43 +94,48 @@ class UserController extends AbstractController
         }
     }
 
-//................................RESET PASSEWORD...................................................
+    //................................RESET PASSEWORD...................................................
 
     /**
      * @Route('/api/reset-password', name: 'reset_password', methods: ['GET', 'POST'])
      */
-    public function resetPassword(Request $request,
-     UserService $userService, MailerInterface $mailer,
-        UrlGeneratorInterface $urlGenerator, LoggerInterface $logger): JsonResponse
-    {
+    public function resetPassword(
+        Request $request,
+        UserService $userService,
+        MailerInterface $mailer,
+        UrlGeneratorInterface $urlGenerator,
+        LoggerInterface $logger
+    ): JsonResponse {
         $resetPasswordDTO = ResetPasswordDTO::createFromRequest($request);
-            
+
         $result = $userService->resetPassword($resetPasswordDTO, $mailer, $urlGenerator);
-    
+
         if ($result->isSuccess()) {
             // Utilisez le journal pour enregistrer un message en cas de succès
             $logger->info('E-mail de réinitialisation du mot de passe envoyé avec succès.', [
                 'email' => $resetPasswordDTO->email,
             ]);
-    
+
             return new JsonResponse(['message' => 'Password reset successful']);
         } else {
             // Utilisez le journal pour enregistrer un message en cas d'échec
             $logger->error('Échec de l\'envoi de l\'e-mail de réinitialisation du mot de passe.', [
                 'email' => $resetPasswordDTO->email,
             ]);
-    
+
             return new JsonResponse(['message' => 'Password reset failed'], 400);
         }
     }
-    
+
     /**
      * @Route('/api/reset-password/{token}', name: 'reset_password_from_link', methods: [GET, POST] )
      * @IsGranted("ROLE_USER")
      */
-    public function resetPasswordFromLink(string $token, UserService $userService,
-     LoggerInterface $logger): JsonResponse
-    {
+    public function resetPasswordFromLink(
+        string $token,
+        UserService $userService,
+        LoggerInterface $logger
+    ): JsonResponse {
         // Log the matched route and token for debugging
         $this->logger->info('Matched route "reset_password_from_link" with token: ' . $token);
 
@@ -149,7 +152,7 @@ class UserController extends AbstractController
         return new JsonResponse(['message' => 'Password reset failed'], 400);
     }
 
-//...............................MODIFY ACCOUNT.......................................
+    //...............................MODIFY ACCOUNT.......................................
 
     /**
      * @Route("/api/modify-account", name:"modify_account", methods:{"PUT"})
@@ -181,14 +184,16 @@ class UserController extends AbstractController
         }
     }
 
-//................................DELETE ACCOUNT...................................................
+    //................................DELETE ACCOUNT...................................................
 
     /**
      * @Route("/api/delete-account", name:"delete_account", methods:{"DELETE"})
      */
-    public function deleteAccount(Request $request,
-     EntityManagerInterface $entityManager, Security $security): JsonResponse
-    {
+    public function deleteAccount(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Security $security
+    ): JsonResponse {
         // Decode the JSON content of the request body
         $data = json_decode($request->getContent(), true);
 
@@ -225,13 +230,15 @@ class UserController extends AbstractController
     }
 
     //............................LOGOUT......................................
-  
+
     /**
- * @Route('/api/logout', name: 'logout', methods: ['GET'])
- */
-    public function logout(Request $request, TokenStorageInterface $tokenStorage,
-     CacheItemPoolInterface $cache): Response
-    {
+     * @Route('/api/logout', name: 'logout', methods: ['GET'])
+     */
+    public function logout(
+        Request $request,
+        TokenStorageInterface $tokenStorage,
+        CacheItemPoolInterface $cache
+    ): Response {
         $token = $request->headers->get('Authorization');
 
         if ($token) {
@@ -253,6 +260,4 @@ class UserController extends AbstractController
 
         return new Response('Logout successful', Response::HTTP_OK);
     }
-
-  
 }
