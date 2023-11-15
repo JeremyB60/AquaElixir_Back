@@ -21,7 +21,7 @@ class Cart
     private ?int $quantity = null;
 
     #[ORM\OneToMany(mappedBy: 'cart', targetEntity: LineCart::class)]
-    private Collection $cartLineCart;
+    private Collection $cartLineCarts;
 
     #[ORM\OneToOne(inversedBy: 'cartUser', cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
@@ -29,7 +29,7 @@ class Cart
 
     public function __construct()
     {
-        $this->cartLineCart = new ArrayCollection();
+        $this->cartLineCarts = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -51,15 +51,15 @@ class Cart
     /**
      * @return Collection<int, LineCart>
      */
-    public function getCartLineCart(): Collection
+    public function getCartLineCarts(): Collection
     {
-        return $this->cartLineCart;
+        return $this->cartLineCarts;
     }
 
     public function addCartLineCart(LineCart $cartLineCart): static
     {
-        if (!$this->cartLineCart->contains($cartLineCart)) {
-            $this->cartLineCart->add($cartLineCart);
+        if (!$this->cartLineCarts->contains($cartLineCart)) {
+            $this->cartLineCarts->add($cartLineCart);
             $cartLineCart->setCart($this);
         }
 
@@ -68,7 +68,7 @@ class Cart
 
     public function removeCartLineCart(LineCart $cartLineCart): static
     {
-        if ($this->cartLineCart->removeElement($cartLineCart)) {
+        if ($this->cartLineCarts->removeElement($cartLineCart)) {
             // set the owning side to null (unless already changed)
             if ($cartLineCart->getCart() === $this) {
                 $cartLineCart->setCart(null);

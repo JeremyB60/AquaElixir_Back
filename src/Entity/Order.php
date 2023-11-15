@@ -32,21 +32,14 @@ class Order
     #[ORM\Column(length: 255)]
     private ?string $deliveryStatus = null;
 
-    #[ORM\ManyToOne(inversedBy: '_order')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Address $address = null;
+    #[ORM\ManyToOne(targetEntity:Address::class, inversedBy:"invoiceOrders")]
+    #[ORM\JoinColumn(name:"invoice_address_id", referencedColumnName:"id")]
+    private $invoiceAddress;
 
-    #[ORM\ManyToOne(inversedBy: '_order2')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Address $address2 = null;
+    #[ORM\ManyToOne(targetEntity:Address::class, inversedBy:"deliveryOrders")]
+    #[ORM\JoinColumn(name:"delivery_address_id", referencedColumnName:"id")]
+    private $deliveryAddress;
 
-    #[ORM\ManyToOne(inversedBy: 'deliveryAddress')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Address $deliveryAddress = null;
-
-    #[ORM\ManyToOne(inversedBy: 'invoiceAddress')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Address $invoiceAddress = null;
 
     #[ORM\OneToMany(mappedBy: 'lineProductOrder', targetEntity: LineProduct::class)]
     private Collection $lineProducts;
@@ -128,55 +121,7 @@ class Order
 
         return $this;
     }
-
-    public function getAddress(): ?Address
-    {
-        return $this->address;
-    }
-
-    public function setAddress(?Address $address): static
-    {
-        $this->address = $address;
-
-        return $this;
-    }
-
-    public function getAddress2(): ?Address
-    {
-        return $this->address2;
-    }
-
-    public function setAddress2(?Address $address2): static
-    {
-        $this->address2 = $address2;
-
-        return $this;
-    }
-
-    public function getDeliveryAddress(): ?Address
-    {
-        return $this->deliveryAddress;
-    }
-
-    public function setDeliveryAddress(?Address $deliveryAddress): static
-    {
-        $this->deliveryAddress = $deliveryAddress;
-
-        return $this;
-    }
-
-    public function getInvoiceAddress(): ?Address
-    {
-        return $this->invoiceAddress;
-    }
-
-    public function setInvoiceAddress(?Address $invoiceAddress): static
-    {
-        $this->invoiceAddress = $invoiceAddress;
-
-        return $this;
-    }
-
+    
     /**
      * @return Collection<int, LineProduct>
      */
@@ -245,6 +190,42 @@ class Order
     public function setOrderUser(?User $orderUser): static
     {
         $this->orderUser = $orderUser;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of invoiceAddress
+     */
+    public function getInvoiceAddress()
+    {
+        return $this->invoiceAddress;
+    }
+
+    /**
+     * Set the value of invoiceAddress
+     */
+    public function setInvoiceAddress($invoiceAddress): self
+    {
+        $this->invoiceAddress = $invoiceAddress;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of deliveryAddress
+     */
+    public function getDeliveryAddress()
+    {
+        return $this->deliveryAddress;
+    }
+
+    /**
+     * Set the value of deliveryAddress
+     */
+    public function setDeliveryAddress($deliveryAddress): self
+    {
+        $this->deliveryAddress = $deliveryAddress;
 
         return $this;
     }

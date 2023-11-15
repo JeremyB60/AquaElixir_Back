@@ -33,26 +33,26 @@ class Address
     #[ORM\Column(length: 50)]
     private ?string $country = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(targetEntity:AddressCategory::class, inversedBy:"addresses")]
     #[ORM\JoinColumn(nullable: false)]
     private ?AddressCategory $addressCategory = null;
 
-    #[ORM\OneToMany(mappedBy: 'deliveryAddress', targetEntity: Order::class)]
-    private Collection $deliveryAddress;
+    #[ORM\OneToMany(targetEntity:Order::class, mappedBy:"invoiceAddress")]
+    private $invoiceOrders;
 
-    #[ORM\OneToMany(mappedBy: 'invoiceAddress', targetEntity: Order::class)]
-    private Collection $invoiceAddress;
+    #[ORM\OneToMany(targetEntity:Order::class, mappedBy:"deliveryAddress")]
+    private $deliveryOrders;
 
     #[ORM\ManyToOne(inversedBy: 'userAddress')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $userAddress = null;
 
+
     public function __construct()
     {
-        $this->deliveryAddress = new ArrayCollection();
-        $this->invoiceAddress = new ArrayCollection();
+        $this->invoiceOrders = new ArrayCollection();
+        $this->deliveryOrders = new ArrayCollection();
     }
-
 
     public function getId(): ?int
     {
@@ -143,60 +143,57 @@ class Address
         return $this;
     }
 
-    /**
-     * @return Collection<int, Order>
+        /**
+     * @return Collection|Order[]
      */
-    public function getDeliveryAddress(): Collection
+    public function getInvoiceOrders(): Collection
     {
-        return $this->deliveryAddress;
+        return $this->invoiceOrders;
     }
 
-    public function addDeliveryAddress(Order $deliveryAddress): static
+    public function addInvoiceOrder(Order $invoiceOrder): static
     {
-        if (!$this->deliveryAddress->contains($deliveryAddress)) {
-            $this->deliveryAddress->add($deliveryAddress);
-            $deliveryAddress->setDeliveryAddress($this);
+        if (!$this->invoiceOrders->contains($invoiceOrder)) {
+            $this->invoiceOrders[] = $invoiceOrder;
+            $invoiceOrder->setInvoiceAddress($this);
         }
 
         return $this;
     }
 
-    public function removeDeliveryAddress(Order $deliveryAddress): static
+    public function removeInvoiceOrder(Order $invoiceOrder): static
     {
-        if ($this->deliveryAddress->removeElement($deliveryAddress)) {
+        if ($this->invoiceOrders->removeElement($invoiceOrder)) {
             // set the owning side to null (unless already changed)
-            if ($deliveryAddress->getDeliveryAddress() === $this) {
-                $deliveryAddress->setDeliveryAddress(null);
+            if ($invoiceOrder->getInvoiceAddress() === $this) {
+                $invoiceOrder->setInvoiceAddress(null);
             }
         }
 
         return $this;
     }
 
-    /**
-     * @return Collection<int, Order>
-     */
-    public function getInvoiceAddress(): Collection
+    public function getDeliveryOrders(): Collection
     {
-        return $this->invoiceAddress;
+        return $this->deliveryOrders;
     }
 
-    public function addInvoiceAddress(Order $invoiceAddress): static
+    public function addDeliveryOrder(Order $deliveryOrder): static
     {
-        if (!$this->invoiceAddress->contains($invoiceAddress)) {
-            $this->invoiceAddress->add($invoiceAddress);
-            $invoiceAddress->setInvoiceAddress($this);
+        if (!$this->deliveryOrders->contains($deliveryOrder)) {
+            $this->deliveryOrders[] = $deliveryOrder;
+            $deliveryOrder->setDeliveryAddress($this);
         }
 
         return $this;
     }
 
-    public function removeInvoiceAddress(Order $invoiceAddress): static
+    public function removeDeliveryOrder(Order $deliveryOrder): static
     {
-        if ($this->invoiceAddress->removeElement($invoiceAddress)) {
+        if ($this->deliveryOrders->removeElement($deliveryOrder)) {
             // set the owning side to null (unless already changed)
-            if ($invoiceAddress->getInvoiceAddress() === $this) {
-                $invoiceAddress->setInvoiceAddress(null);
+            if ($deliveryOrder->getDeliveryAddress() === $this) {
+                $deliveryOrder->setDeliveryAddress(null);
             }
         }
 

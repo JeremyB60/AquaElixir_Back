@@ -18,7 +18,7 @@ class AddressCategory
     #[ORM\Column(length: 50)]
     private ?string $name = null;
 
-    #[ORM\OneToMany(mappedBy: 'AddressCategory', targetEntity: Address::class)]
+    #[ORM\OneToMany(mappedBy: 'addressCategory', targetEntity: Address::class)]
     private Collection $addresses;
 
     public function __construct()

@@ -1,7 +1,8 @@
 controllers:
-    resource: ../src/Controller/
+    resource:
+        path: ../src/Controller/
+        namespace: App\Controller
     type: attribute
-
 # Register user
 register:
     path: /api/register
@@ -17,6 +18,12 @@ confirm_email:
 # Connexion user
 api_login_check:
     path: /api/login_check
+
+api_refresh_token:
+    path: /api/token/refresh
+
+api_token_invalidate:
+    path: /api/token/invalidate
 
 # Deconnexion user
 logout:
@@ -47,3 +54,4 @@ modify_account:
     path: /api/modify-account
     controller: App\Controller\UserController::modifyAccount
     methods: [PUT]
+    

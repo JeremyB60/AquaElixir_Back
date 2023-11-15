@@ -9,7 +9,6 @@ use App\DTO\Request\RegisterUserDTO;
 use App\DTO\Request\DeleteAccountDTO;
 use App\DTO\Request\ResetPasswordDTO;
 use App\DTO\Request\ModifyAccountDTO;
-use Psr\Cache\CacheItemPoolInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Mailer\MailerInterface;
@@ -19,7 +18,6 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\Security\Core\Exception\LogoutException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
@@ -234,30 +232,13 @@ class UserController extends AbstractController
     /**
      * @Route('/api/logout', name: 'logout', methods: ['GET'])
      */
-    public function logout(
-        Request $request,
-        TokenStorageInterface $tokenStorage,
-        CacheItemPoolInterface $cache
-    ): Response {
-        $token = $request->headers->get('Authorization');
-
-        if ($token) {
-            // Extract the actual token value from the "Bearer" prefix
-            $token = str_replace('Bearer ', '', $token);
-
-            // Invalidate the token by adding it to the blacklist
-            $cacheItem = $cache->getItem($token);
-            $cacheItem->set(true);
-            $cacheItem->expiresAfter(86400);
-
-            // Save the cache item
-            $cache->saveDeferred($cacheItem);
-            $cache->commit();
-        }
-
-        // Clear the security token after
+    public function logout(TokenStorageInterface $tokenStorage): Response
+    {
+        // Clear the security token
         $tokenStorage->setToken(null);
 
         return new Response('Logout successful', Response::HTTP_OK);
     }
+
+
 }
