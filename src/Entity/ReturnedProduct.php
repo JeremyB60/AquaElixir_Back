@@ -15,7 +15,7 @@ class ReturnedProduct
     private ?int $id = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $date = null;
+    private ?\DateTimeInterface $returnedDate = null;
 
     #[ORM\Column(length: 255)]
     private ?string $returnedObject = null;
@@ -36,14 +36,14 @@ class ReturnedProduct
         return $this->id;
     }
 
-    public function getDate(): ?\DateTimeInterface
+    public function getReturnedDate(): ?\DateTimeInterface
     {
-        return $this->date;
+        return $this->returnedDate;
     }
 
-    public function setDate(\DateTimeInterface $date): static
+    public function setReturnedDate(\DateTimeInterface $returnedDate): static
     {
-        $this->date = $date;
+        $this->returnedDate = $returnedDate;
 
         return $this;
     }

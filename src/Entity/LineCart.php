@@ -16,7 +16,7 @@ class LineCart
     #[ORM\Column]
     private ?int $quantity = null;
 
-    #[ORM\ManyToOne(inversedBy: 'CartLineCart')]
+    #[ORM\ManyToOne(targetEntity:Cart::class, inversedBy:"cartLineCarts")]
     #[ORM\JoinColumn(nullable: false)]
     private ?Cart $cart = null;
 

@@ -1,5 +1,4 @@
 security:
-    enable_authenticator_manager: true
     # https://symfony.com/doc/current/security.html#registering-the-user-hashing-passwords
     password_hashers:
         Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
@@ -13,10 +12,10 @@ security:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
-        
+
         #main:
-            #lazy: true
-            #provider: app_user_provider
+        #    lazy: true
+        #    provider: app_user_provider
 
         login:
             pattern: ^/api/login
@@ -25,9 +24,10 @@ security:
                 check_path: /api/login_check
                 success_handler: lexik_jwt_authentication.handler.authentication_success
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
+                provider: app_user_provider  
 
             logout:
-                path: app_logout
+                path: api_token_invalidate
             remember_me:
                 secret: '%kernel.secret%'
                 lifetime: 604800 # 1 semaine
@@ -51,11 +51,16 @@ security:
             pattern: ^/api/reset-password/{token}
             stateless: true
             security: false
-         
+
         api:
             pattern: ^/api
             stateless: true
             jwt: ~
+            refresh_jwt:
+                check_path: /api/token/refresh
+            entry_point: jwt
+
+                
 
     access_control:
         - { path: ^/api/login, roles: PUBLIC_ACCESS }
@@ -67,7 +72,9 @@ security:
         - { path: ^/api/delete-account, roles: [ROLE_USER], methods: [DELETE] }
         - { path: ^/api/modify-account, roles: [ROLE_USER], methods: [PUT] }
         - { path: ^/api/logout, roles: [ROLE_USER], methods: [GET] }
+        - { path: ^/api/(login|token/refresh), roles: [ROLE_USER], methods: [POST] }
         - { path: ^/api,       roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/admin, roles: [ROLE_ADMIN] }
 
 when@test:
     security:
