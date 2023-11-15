@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\DTO\Request;
 
 use Symfony\Component\HttpFoundation\Request;
@@ -9,7 +11,7 @@ class RegisterUserDTO
 {
     /**
      * @Assert\NotBlank(message="First name is required")
-     * @Assert\Length(min=2, max=50
+     * @Assert\Length(min=2, max=50)
      */
     public string $firstName;
 
@@ -21,6 +23,7 @@ class RegisterUserDTO
 
     /**
      * @Assert\Email(message="Invalid email format")
+     * @Assert\NotBlank(message="Email is required")
      * @Assert\Email()
      */
     public string $email;
@@ -32,29 +35,25 @@ class RegisterUserDTO
      */
     public string $password;
 
-    public function __construct(
-        string $firstName,
-        string $lastName,
-        string $email,
-        string $password
-    ) {
+    private function __construct(string $firstName, string $lastName, string $email, string $password)
+    {
         $this->firstName = $firstName;
         $this->lastName = $lastName;
         $this->email = $email;
         $this->password = $password;
     }
 
-    public static function createFromRequest(Request $request): RegisterUserDTO
+    public static function createFromRequest(Request $request): self
     {
         $data = json_decode($request->getContent(), true);
 
-        // Validate and set the DTO properties here.
+        // Ajoutez des validations supplémentaires si nécessaire.
+
         return new self(
-            $data['firstName'],
-            $data['lastName'],
-            $data['email'],
-            $data['password']
+            $data['firstName'] ?? '',
+            $data['lastName'] ?? '',
+            $data['email'] ?? '',
+            $data['password'] ?? ''
         );
     }
 }
-
