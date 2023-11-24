@@ -20,12 +20,6 @@ class ModifyAccountDTO
     private ?string $lastName;
 
     /**
-     * @Assert\Email(message="Invalid email format")
-     * @Assert\Email()
-     */
-    private ?string $email;
-
-    /**
      * @Assert\NotBlank(message="Password is required")
      * @Assert\Password()
      * @Assert\Length(min=8)
@@ -63,18 +57,6 @@ class ModifyAccountDTO
         return $this;
     }
 
-    public function getEmail(): ?string
-    {
-        return $this->email;
-    }
-
-    public function setEmail(?string $email): self
-    {
-        $this->email = $email;
-
-        return $this;
-    }
-
     public function getPassword(): ?string
     {
         return $this->password;
@@ -102,17 +84,15 @@ class ModifyAccountDTO
     public function __construct(
         ?string $firstName,
         ?string $lastName,
-        ?string $email,
         ?string $password,
         ?string $currentPassword
     ) {
         $this->firstName = $firstName;
         $this->lastName = $lastName;
-        $this->email = $email;
         $this->password = $password;
         $this->currentPassword = $currentPassword;
     }
-    
+
 
     public static function createFromRequest(Request $request): ModifyAccountDTO
     {
@@ -121,7 +101,6 @@ class ModifyAccountDTO
         return new self(
             $data['firstName'] ?? null,
             $data['lastName'] ?? null,
-            $data['email'] ?? null,
             $data['password'] ?? null,
             $data['currentPassword'] ?? null
         );

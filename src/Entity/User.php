@@ -19,14 +19,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?int $id;
 
-    #[ORM\Column(type: 'string',length: 50)]
+    #[ORM\Column(type: 'string', length: 50)]
     #[Assert\NotBlank()]
-    #[Assert\Length(min:2,max:50)]
+    #[Assert\Length(min: 2, max: 50)]
     private ?string $firstName;
 
-    #[ORM\Column(type: 'string',length: 50)]
+    #[ORM\Column(type: 'string', length: 50)]
     #[Assert\NotBlank()]
-    #[Assert\Length(min:2,max:50)]
+    #[Assert\Length(min: 2, max: 50)]
     private ?string $lastName;
 
     #[ORM\Column(type: 'string', length: 180, unique: true)]
@@ -41,7 +41,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Assert\Length(min: 8)]
     private ?string $password;
 
-    #[ORM\Column (type:'json')]
+    #[ORM\Column(type: 'json')]
     #[Assert\NotNull()]
     private array $roles = [];
 
@@ -80,7 +80,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->confirmationToken = bin2hex(random_bytes(32));
     }
 
-    
+
     public function getId(): ?int
     {
         return $this->id;
@@ -171,6 +171,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+
     public function setIsEmailConfirmed(bool $isEmailConfirmed): self
     {
         $this->isEmailConfirmed = $isEmailConfirmed;
@@ -194,7 +195,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
-    
+
     /**
      * A visual identifier that represents this user.
      *
@@ -209,13 +210,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         return $this->getUserIdentifier();
     }
-    
+
     public function eraseCredentials()
     {
         // Remove sensitive data from the user
         // $this->plainPassword = null;
     }
-    
+
     public function getCartUser(): ?Cart
     {
         return $this->cartUser;

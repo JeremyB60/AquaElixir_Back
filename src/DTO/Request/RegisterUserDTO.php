@@ -35,13 +35,17 @@ class RegisterUserDTO
      */
     public string $password;
 
-    private function __construct(string $firstName, string $lastName, string $email, string $password)
+    private function __construct(string $firstName, string $lastName, string $email, string $password, string $confirmPassword)
     {
         $this->firstName = $firstName;
         $this->lastName = $lastName;
         $this->email = $email;
         $this->password = $password;
+        $this->confirmPassword = $confirmPassword;
     }
+
+    public ?string $confirmPassword = null;
+
 
     public static function createFromRequest(Request $request): self
     {
@@ -53,7 +57,8 @@ class RegisterUserDTO
             $data['firstName'] ?? '',
             $data['lastName'] ?? '',
             $data['email'] ?? '',
-            $data['password'] ?? ''
+            $data['password'] ?? '',
+            $data['confirmPassword'] ?? null
         );
     }
 }

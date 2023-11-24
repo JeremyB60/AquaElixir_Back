@@ -20,6 +20,7 @@ class LoginUserDTO
      */
     public ?string $password = null;
 
+
     public static function createFromRequest(Request $request): LoginUserDTO
     {
         $data = json_decode($request->getContent(), true);

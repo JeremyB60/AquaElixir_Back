@@ -32,11 +32,14 @@ class UserService
     private $passwordGenerator;
 
 
-    public function __construct(UserPasswordHasherInterface $passwordHasher,
-    EntityManagerInterface $entityManager,
-    MailerInterface $mailer, UrlGeneratorInterface $urlGenerator, LoggerInterface $logger,
-     PasswordGenerator $passwordGenerator)
-    {
+    public function __construct(
+        UserPasswordHasherInterface $passwordHasher,
+        EntityManagerInterface $entityManager,
+        MailerInterface $mailer,
+        UrlGeneratorInterface $urlGenerator,
+        LoggerInterface $logger,
+        PasswordGenerator $passwordGenerator
+    ) {
         $this->passwordHasher = $passwordHasher;
         $this->entityManager = $entityManager;
         $this->mailer = $mailer;
@@ -45,7 +48,7 @@ class UserService
         $this->passwordGenerator = $passwordGenerator;
     }
 
-//....................................REGISTER...................................................
+    //....................................REGISTER...................................................
 
     //Gestion d'inscription
     public function registerUser(RegisterUserDTO $registerUserDTO, ValidatorInterface $validator): ServiceResult
@@ -57,41 +60,41 @@ class UserService
                 'email' => $registerUserDTO->email,
                 'password' => $registerUserDTO->password,
             ]]);
-    
+
             // Validation the DTO
-        $validator->validate($registerUserDTO, new Assert\Collection([
-            'firstName' => new Assert\NotBlank(),
-            'lastName' => new Assert\NotBlank(),
-            'email' => [
-                new Assert\NotBlank(),
-                new Assert\Email(),
-            ],
-            'password' => new Assert\Length(['min' => 8]),
-        ]));
-    
-        // On continue avec la logique d'inscription
-        $user = new User();
-        $user->setFirstName($registerUserDTO->firstName);
-        $user->setLastName($registerUserDTO->lastName);
-        $user->setEmail($registerUserDTO->email);
-        $user->setRoles(['ROLE_USER']);
+            $validator->validate($registerUserDTO, new Assert\Collection([
+                'firstName' => new Assert\NotBlank(),
+                'lastName' => new Assert\NotBlank(),
+                'email' => [
+                    new Assert\NotBlank(),
+                    new Assert\Email(),
+                ],
+                'password' => new Assert\Length(['min' => 8]),
+            ]));
 
-        // Hasher et définir le mot de passe
-        $password = $this->passwordHasher->hashPassword($user, $registerUserDTO->password);
-        $user->setPassword($password);
+            // On continue avec la logique d'inscription
+            $user = new User();
+            $user->setFirstName($registerUserDTO->firstName);
+            $user->setLastName($registerUserDTO->lastName);
+            $user->setEmail($registerUserDTO->email);
+            $user->setRoles(['ROLE_USER']);
 
-        // On défini le jeton de confirmation
-        $confirmationToken = bin2hex(random_bytes(32));
-        $user->setConfirmationToken($confirmationToken);
+            // Hasher et définir le mot de passe
+            $password = $this->passwordHasher->hashPassword($user, $registerUserDTO->password);
+            $user->setPassword($password);
 
-        // Persister l'utilisateur dans la base de données
-        $this->entityManager->persist($user);
-        $this->entityManager->flush();
+            // On défini le jeton de confirmation
+            $confirmationToken = bin2hex(random_bytes(32));
+            $user->setConfirmationToken($confirmationToken);
 
-        // Envoi d'e-mail de confirmation
-        $this->sendConfirmationEmail($user, $this->mailer, $this->urlGenerator, $this->logger);
+            // Persister l'utilisateur dans la base de données
+            $this->entityManager->persist($user);
+            $this->entityManager->flush();
 
-        return ServiceResult::createSuccess();
+            // Envoi d'e-mail de confirmation
+            $this->sendConfirmationEmail($user, $this->mailer, $this->urlGenerator, $this->logger);
+
+            return ServiceResult::createSuccess();
         } catch (\Exception $e) {
             $this->logger->error('Erreur lors de l\'inscription: ' . $e->getMessage());
             // Renvoie une réponse d'erreur ou lève une exception si nécessaire
@@ -100,9 +103,12 @@ class UserService
     }
 
 
-    public function sendConfirmationEmail(User $user, MailerInterface $mailer,
-     UrlGeneratorInterface $urlGenerator, LoggerInterface $logger): ServiceResult
-    {
+    public function sendConfirmationEmail(
+        User $user,
+        MailerInterface $mailer,
+        UrlGeneratorInterface $urlGenerator,
+        LoggerInterface $logger
+    ): ServiceResult {
         $this->logger->info('Tentative d\'envoi d\'un e-mail de confirmation à l\'utilisateur: ' . $user->getEmail());
 
         // On s'assure que l'utilisateur dispose d'un jeton de confirmation
@@ -113,8 +119,11 @@ class UserService
         }
 
         // Génération de l'URL de confirmation à l'aide du jeton existant
-        $confirmationUrl = $urlGenerator->generate('confirm_email',
-        ['token' => $confirmationToken], UrlGeneratorInterface::ABSOLUTE_URL);
+        $confirmationUrl = $urlGenerator->generate(
+            'confirm_email',
+            ['token' => $confirmationToken],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        );
 
         // Envoi d'e-mail de confirmation
         $email = (new Email())
@@ -123,7 +132,7 @@ class UserService
             ->subject('Confirmation d\'e-mail')
             ->html("Cliquez sur le lien suivant pour confirmer votre e-mail: <a href=
             '{$confirmationUrl}'>Confirmer votre e-mail</a>");
-            
+
         try {
             $mailer->send($email);
         } catch (\Exception $e) {
@@ -151,13 +160,13 @@ class UserService
 
         // On coche l'e-mail comme confirmé et on supprime le jeton
         // On active le compte client
-            $user->setIsEmailConfirmed(true);
-            $user->setConfirmationToken(null);
-            $user->setAccountStatus('active');
+        $user->setIsEmailConfirmed(true);
+        $user->setConfirmationToken(null);
+        $user->setAccountStatus('active');
 
-            // Mise à jour d'utilisateur dans la base de données
-            $this->entityManager->persist($user);
-            $this->entityManager->flush();
+        // Mise à jour d'utilisateur dans la base de données
+        $this->entityManager->persist($user);
+        $this->entityManager->flush();
 
         return ServiceResult::createSuccess('E-mail confirmé.');
     }
@@ -165,34 +174,41 @@ class UserService
 
 
 
-//....................................LOGIN...................................................
+    //....................................LOGIN...................................................
 
     // Gestion de Login
     public function loginUser(LoginUserDTO $loginUserDTO): ServiceResult
     {
         // Charger l'utilisateur par email
         $user = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $loginUserDTO->email]);
-
         if (!$user) {
             return ServiceResult::createError('User not found', 404);
         }
 
-        // Pour vérifiez si le mot de passe est valide
+        // Vérifier si l'utilisateur existe et si l'email a été confirmé
+        if (!$user || !$user->getIsEmailConfirmed()) {
+            // Gérer le cas où l'utilisateur n'existe pas ou l'email n'est pas confirmé
+            return ServiceResult::createError('E-mail non confirmé ou utilisateur introuvable.');
+        }
+
+        // Pour vérifier si le mot de passe est valide
         if (!$this->passwordHasher->isPasswordValid($user, $loginUserDTO->password)) {
             return ServiceResult::createError('Invalid credentials', 401);
         }
 
         // Implémentation de la logique d'authentification ici.
 
-        return ServiceResult::createSuccess();
+        return ServiceResult::createSuccess('Connexion réussie.');
     }
 
-//....................................RESET PASSEWORD...................................................
+    //....................................RESET PASSEWORD...................................................
 
     // Gestion d'envoi de reinitialisation de mot de passe
-    public function resetPassword(ResetPasswordDTO $resetPasswordDTO,
-     MailerInterface $mailer, UrlGeneratorInterface $urlGenerator): ServiceResult
-    {
+    public function resetPassword(
+        ResetPasswordDTO $resetPasswordDTO,
+        MailerInterface $mailer,
+        UrlGeneratorInterface $urlGenerator
+    ): ServiceResult {
         $email = $resetPasswordDTO->email;
 
         $this->logger->info('Attempting to reset password for email: ' . $email);
@@ -216,8 +232,11 @@ class UserService
             throw new UserResetPasswordException('Failed to generate the reset token');
         }
         // Générer l'URL de réinitialisation du mot de passe
-        $resetUrl = $urlGenerator->generate('reset_password_from_link',
-         ['token' => $resetToken], UrlGeneratorInterface::ABSOLUTE_URL);
+        $resetUrl = $urlGenerator->generate(
+            'reset_password_from_link',
+            ['token' => $resetToken],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        );
 
         // Envoyer un e-mail à l'utilisateur avec l'URL de réinitialisation du mot de passe
         $email = (new Email())
@@ -227,12 +246,12 @@ class UserService
             ->html("Cliquez sur le lien suivant pour réinitialiser votre mot de passe:
                 <a href='{$resetUrl}'>Reset Password</a");
 
-                try {
-                    $mailer->send($email);
-                } catch (\Exception $e) {
-                    throw new EmailSendException('Failed to send the reset email', $e);
-                }
-                
+        try {
+            $mailer->send($email);
+        } catch (\Exception $e) {
+            throw new EmailSendException('Failed to send the reset email', $e);
+        }
+
         return ServiceResult::createSuccess('E-mail de réinitialisation du mot de passe envoyé.');
     }
 
@@ -263,7 +282,6 @@ class UserService
             ->text('Votre nouveau mot de passe est : ' . $newPassword);
 
         $this->mailer->send($email);
-
     }
 
     //..........................MODIFY ACCOUNT.............................................
@@ -273,53 +291,48 @@ class UserService
         try {
             $this->logger->debug('DTO Data: ' . print_r($modifyAccountDTO, true));
 
-        // Verify the current password before allowing the change
-        if ($modifyAccountDTO->getCurrentPassword() !== null) {
-            $currentPassword = $modifyAccountDTO->getCurrentPassword();
+            // Verify the current password before allowing the change
+            if ($modifyAccountDTO->getCurrentPassword() !== null) {
+                $currentPassword = $modifyAccountDTO->getCurrentPassword();
 
-            // Log or print the current password and hashed current password
-            $this->logger->debug('Current Password: ' . $currentPassword);
-            $this->logger->debug('Hashed Current Password: ' . $user->getPassword());
+                // Log or print the current password and hashed current password
+                $this->logger->debug('Current Password: ' . $currentPassword);
+                $this->logger->debug('Hashed Current Password: ' . $user->getPassword());
 
-            // Check if the provided current password matches the actual current password
-            if (!$this->passwordHasher->isPasswordValid($user, $currentPassword)) {
-                // Log or print the hashed password stored in the database
-                $this->logger->debug('Hashed Password in Database: ' . $user->getPassword());
+                // Check if the provided current password matches the actual current password
+                if (!$this->passwordHasher->isPasswordValid($user, $currentPassword)) {
+                    // Log or print the hashed password stored in the database
+                    $this->logger->debug('Hashed Password in Database: ' . $user->getPassword());
 
-                return ServiceResult::createError('Invalid current password', 401);
+                    return ServiceResult::createError('Invalid current password', 401);
+                }
             }
-        }
 
             // Update the user's account based on the provided data
             if ($modifyAccountDTO->getFirstName() !== null) {
                 $user->setFirstName($modifyAccountDTO->getFirstName());
             }
-    
+
             if ($modifyAccountDTO->getLastName() !== null) {
                 $user->setLastName($modifyAccountDTO->getLastName());
             }
-    
-            if ($modifyAccountDTO->getEmail() !== null) {
-                $user->setEmail($modifyAccountDTO->getEmail());
-            }
-    
+
             if ($modifyAccountDTO->getPassword() !== null) {
                 // You may want to handle password hashing here
                 $hashedPassword = $this->passwordHasher->hashPassword($user, $modifyAccountDTO->getPassword());
                 $user->setPassword($hashedPassword);
             }
-    
+
             // Persist changes to the database
             $this->entityManager->persist($user);
             $this->entityManager->flush();
-    
+
             return ServiceResult::createSuccess('Account modified successfully');
         } catch (\Exception $e) {
             $this->logger->error('Error modifying account: ' . $e->getMessage());
-    
+
             // Return an error response or throw an exception if necessary
             return ServiceResult::createError('Failed to modify the account', 500);
-         }
+        }
     }
-
 }

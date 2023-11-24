@@ -1,57 +1,56 @@
 controllers:
-    resource:
-        path: ../src/Controller/
-        namespace: App\Controller
-    type: attribute
+  resource:
+    path: ../src/Controller/
+    namespace: App\Controller
+  type: attribute
 # Register user
 register:
-    path: /api/register
-    controller: App\Controller\UserController::register
-    methods: [POST]
+  path: /api/register
+  controller: App\Controller\UserController::register
+  methods: [POST]
 
 # Email de confirmation
 confirm_email:
-    path: /api/confirm-email/{token}
-    controller: App\Controller\UserController::confirmEmail
-    methods: [GET]
+  path: /api/confirm-email/{token}
+  controller: App\Controller\UserController::confirmEmail
+  methods: [GET]
 
 # Connexion user
 api_login_check:
-    path: /api/login_check
+  path: /api/login_check
 
 api_refresh_token:
-    path: /api/token/refresh
+  path: /api/token/refresh
 
 api_token_invalidate:
-    path: /api/token/invalidate
+  path: /api/token/invalidate
 
 # Deconnexion user
 logout:
-    path: /api/logout
-    controller: 'App\Controller\UserController::logout'
-    methods: ['GET']
+  path: /api/logout
+  controller: 'App\Controller\UserController::logout'
+  methods: ["GET"]
 
 # Reinitialisation mot de passe- envoi de mot de passe
 reset_password:
-    path: /api/reset-password
-    controller: App\Controller\UserController::resetPassword
-    methods: [GET, POST] 
+  path: /api/reset-password
+  controller: App\Controller\UserController::resetPassword
+  methods: [GET, POST]
 
 # Reinitialisation mot de passe - avec nouveau mot de passe
 reset_password_from_link:
-    path: /api/reset-password/{token}
-    controller: App\Controller\UserController::resetPasswordFromLink
-    methods: [GET, POST]
+  path: /api/reset-password/{token}
+  controller: App\Controller\UserController::resetPasswordFromLink
+  methods: [GET, POST]
 
 # Suppression de compte
 delete_account:
-    path: /api/delete-account
-    controller: App\Controller\UserController::deleteAccount
-    methods: [DELETE]
+  path: /api/delete-account
+  controller: App\Controller\UserController::deleteAccount
+  methods: [DELETE]
 
 # Modification de compte
 modify_account:
-    path: /api/modify-account
-    controller: App\Controller\UserController::modifyAccount
-    methods: [PUT]
-    
+  path: /api/modify-account
+  controller: App\Controller\UserController::modifyAccount
+  methods: [PUT]
