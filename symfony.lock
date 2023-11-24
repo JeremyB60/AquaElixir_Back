@@ -82,9 +82,9 @@
             "ref": "13fb2b58ec6204211815eb6f4c69e4918e5af617"
         },
         "files": [
-            "./config/packages/gesdinet_jwt_refresh_token.yaml",
-            "./config/routes/gesdinet_jwt_refresh_token.yaml",
-            "./src/Entity/RefreshToken.php"
+            "config/packages/gesdinet_jwt_refresh_token.yaml",
+            "config/routes/gesdinet_jwt_refresh_token.yaml",
+            "src/Entity/RefreshToken.php"
         ]
     },
     "lexik/jwt-authentication-bundle": {
