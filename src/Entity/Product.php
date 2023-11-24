@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use App\Entity\Traits\CreatedAtTrait;
+use App\Entity\Traits\SlugTrait;
 use App\Repository\ProductRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -11,6 +13,9 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
 class Product
 {
+    use SlugTrait;
+    use CreatedAtTrait;
+    
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -22,10 +27,10 @@ class Product
     #[ORM\Column(length: 255)]
     private ?string $reference = null;
 
-    #[ORM\Column(type: 'decimal', precision: 10, scale: 2)]
+    #[ORM\Column(type: 'float', precision: 10, scale: 2)]
     private ?float $price;
 
-    #[ORM\Column(type: 'decimal', precision: 10, scale: 2)]
+    #[ORM\Column(type: 'float', precision: 10, scale: 2)]
     private ?float $taxe = null;
 
     #[ORM\Column(length: 255)]
