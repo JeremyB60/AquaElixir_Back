@@ -54,3 +54,25 @@ modify_account:
   path: /api/modify-account
   controller: App\Controller\UserController::modifyAccount
   methods: [PUT]
+
+# Admin - Liste des utilisateurs
+api_users_list:
+  path: "/api/users"
+  controller: 'App\Controller\AdminUsersController::getUsers'
+  methods: ["POST"]
+
+# Admin - Bannir un utilisateur
+api_user_ban:
+  path: "/api/users/{id}/ban"
+  controller: 'App\Controller\AdminUsersController::banUser'
+  methods: ["POST"]
+  requirements:
+    id: '\d+'
+
+# Admin - Supprimer un utilisateur
+api_user_delete:
+  path: "/api/users/{id}"
+  controller: 'App\Controller\AdminUsersController::deleteUser'
+  methods: ["DELETE"]
+  requirements:
+    id: '\d+'

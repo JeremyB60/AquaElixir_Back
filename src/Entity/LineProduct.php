@@ -17,7 +17,7 @@ class LineProduct
     #[ORM\Column]
     private ?int $quantity = null;
 
-    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
+    #[ORM\Column(type: Types::FLOAT, precision: 10, scale: 2)]
     private ?float $unitPrice = null;
 
     #[ORM\ManyToOne(inversedBy: 'lineProducts')]
