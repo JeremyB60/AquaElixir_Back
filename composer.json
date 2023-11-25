@@ -13,6 +13,7 @@
         "doctrine/doctrine-migrations-bundle": "^3.2",
         "doctrine/orm": "^2.17",
         "easycorp/easyadmin-bundle": "^4",
+        "fakerphp/faker": "^1.23",
         "friendsofsymfony/ckeditor-bundle": "^2.4",
         "gesdinet/jwt-refresh-token-bundle": "^1.2",
         "lexik/jwt-authentication-bundle": "^2.19",
