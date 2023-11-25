@@ -13,6 +13,7 @@ use App\Entity\Tag;
 
 class ProductFixtures extends Fixture implements DependentFixtureInterface
 {
+
     private $slugger;
 
     public function __construct(SluggerInterface $slugger)
@@ -127,7 +128,7 @@ class ProductFixtures extends Fixture implements DependentFixtureInterface
                 $product->setStock($faker->numberBetween(2, 5) * 10);
                 $product->setSlug($this->slugify($productName));
                 $product->setProductType($categoryType);
-                $product->setCreatedAt(new DateTimeImmutable());
+                $product->setCreatedAt(new \DateTime()); // Utilisation de DateTime                
                 $this->addReference('product_' . $this->slugify($productName), $product);
                 $manager->persist($product);
             }

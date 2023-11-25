@@ -30,7 +30,7 @@ class UserFixtures extends Fixture
         $admin->setRoles(['ROLE_ADMIN']);
         $admin->setAccountStatus('active');
         $admin->setIsEmailConfirmed('1');
-        $admin->setCreatedAt(new DateTimeImmutable());
+        $admin->setCreatedAt(new \DateTime()); // Utilisation de DateTime
         $manager->persist($admin);
 
         $faker = Faker\Factory::create('fr_FR');
@@ -46,8 +46,7 @@ class UserFixtures extends Fixture
             $user->setRoles(['ROLE_USER']);
             $user->setAccountStatus('active');
             $user->setIsEmailConfirmed('1');
-            $user->setCreatedAt(new DateTimeImmutable());
-
+            $user->setCreatedAt(new \DateTime()); // Utilisation de DateTime
             $manager->persist($user);
         }
 

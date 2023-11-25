@@ -21,8 +21,8 @@ class Review
     private ?string $comment = null;
 
     #[ORM\Column]
-    private ?\DateTimeImmutable $createdAt = null;
-
+    private ?\DateTime $createdAt = null; // Modification pour utiliser DateTime
+    
     #[ORM\ManyToOne(inversedBy: 'productReview')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Product $productReview = null;
@@ -60,12 +60,12 @@ class Review
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
+    public function getCreatedAt(): ?\DateTime
     {
         return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $createdAt): static
+    public function setCreatedAt(\DateTime $createdAt): self
     {
         $this->createdAt = $createdAt;
 
