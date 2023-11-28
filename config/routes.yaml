@@ -77,6 +77,14 @@ api_user_delete:
   requirements:
     id: '\d+'
 
+    # Admin - Supprimer un utilisateur
+api_user_change_role:
+  path: "/api/users/{id}/change-role"
+  controller: 'App\Controller\AdminUsersController::changeUserRole'
+  methods: ["PUT"]
+  requirements:
+    id: '\d+'
+
 # Home - Récupération des nouveaux produits et des produits populaires
 api_new_products:
     path: /api/new-products

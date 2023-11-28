@@ -9,6 +9,7 @@ use App\Repository\UserRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\HttpFoundation\Request;
 
 class AdminUsersController extends AbstractController
 {
@@ -28,8 +29,8 @@ class AdminUsersController extends AbstractController
                 'lastName' => $user->getLastName(),
                 'firstName' => $user->getFirstName(),
                 'accountStatus' => $user->getAccountStatus(),
-                'createdAt' => $user->getCreatedAt()->format('d-m-Y H:i:s'), // Formatage de la date
-                // Ajoutez d'autres champs si nécessaire
+                'createdAt' => $user->getCreatedAt()->format('d-m-Y H:i:s'),
+                'roles' => !empty($user->getRoles()) ? current($user->getRoles()) : null,
             ];
         }
 
@@ -88,5 +89,38 @@ class AdminUsersController extends AbstractController
             ? 'Utilisateur banni avec succès'
             : 'Bannissement annulé avec succès';
         return $this->json(['message' => $message, 'accountStatus' => $user->getAccountStatus()]);
+    }
+
+    /**
+     * @Route("/api/users/{id}/change-role", name="api_user_change_role", methods={"PUT"})
+     * @Security("is_granted('ROLE_ADMIN')")
+     */
+    public function changeUserRole(
+        UserRepository $userRepository,
+        EntityManagerInterface $entityManager,
+        Request $request,
+        int $id
+    ): JsonResponse {
+        $user = $userRepository->find($id);
+
+        if (!$user) {
+            throw $this->createNotFoundException('Utilisateur non trouvé');
+        }
+
+        $data = json_decode($request->getContent(), true);
+
+        // Vérifiez si le rôle est valide (ajuste selon tes besoins)
+        $validRoles = ['ROLE_USER', 'ROLE_ADMIN'];
+        if (!isset($data['newRole']) || !in_array($data['newRole'], $validRoles)) {
+            return $this->json(['message' => 'Rôle invalide'], 400);
+        }
+
+        // Mettez à jour le rôle de l'utilisateur
+        $user->setRoles([$data['newRole']]);
+
+        // Enregistrez les modifications dans la base de données 
+        $entityManager->flush($user);
+
+        return $this->json(['message' => 'Rôle de l\'utilisateur mis à jour avec succès', 'roles' => $user->getRoles()]);
     }
 }
