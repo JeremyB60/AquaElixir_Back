@@ -77,7 +77,7 @@ class ImageFixtures extends Fixture implements DependentFixtureInterface
         foreach ($productData as $productName) {
             $prodName = $this->getReference('product_' . $this->slugify($productName));
             $image = new Image();
-            $image->setUrl('/path/to/product/image/' . $this->slugify($productName) . '.jpg');
+            $image->setUrl('/images/products/' . $this->slugify($productName) . '.jpg');
             $image->setImage($prodName);
             $manager->persist($image);
         }

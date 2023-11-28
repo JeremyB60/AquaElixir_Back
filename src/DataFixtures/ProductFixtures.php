@@ -6,10 +6,8 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use App\Entity\Product;
 use Symfony\Component\String\Slugger\SluggerInterface;
-use DateTimeImmutable;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Faker\Factory;
-use App\Entity\Tag;
 
 class ProductFixtures extends Fixture implements DependentFixtureInterface
 {
@@ -128,7 +126,7 @@ class ProductFixtures extends Fixture implements DependentFixtureInterface
                 $product->setStock($faker->numberBetween(2, 5) * 10);
                 $product->setSlug($this->slugify($productName));
                 $product->setProductType($categoryType);
-                $product->setCreatedAt(new \DateTime()); // Utilisation de DateTime                
+                $product->setCreatedAt(new \DateTime()); // Utilisation de DateTime
                 $this->addReference('product_' . $this->slugify($productName), $product);
                 $manager->persist($product);
             }

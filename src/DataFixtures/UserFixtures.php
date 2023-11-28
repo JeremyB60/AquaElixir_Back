@@ -8,7 +8,6 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use App\Entity\User;
 use Faker;
-use DateTimeImmutable;
 
 class UserFixtures extends Fixture
 {
@@ -47,6 +46,7 @@ class UserFixtures extends Fixture
             $user->setAccountStatus('active');
             $user->setIsEmailConfirmed('1');
             $user->setCreatedAt(new \DateTime()); // Utilisation de DateTime
+            $user->setConfirmationToken('');
             $manager->persist($user);
         }
 

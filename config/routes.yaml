@@ -76,3 +76,14 @@ api_user_delete:
   methods: ["DELETE"]
   requirements:
     id: '\d+'
+
+# Home - Récupération des nouveaux produits et des produits populaires
+api_new_products:
+    path: /api/new-products
+    controller: App\Controller\HomeController::getNewProducts
+    methods: [GET]
+
+api_popular_products:
+    path: /api/popular-products
+    controller: App\Controller\HomeController::getPopularProducts
+    methods: [GET]

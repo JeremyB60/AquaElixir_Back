@@ -63,10 +63,11 @@ security:
 
   access_control:
     - { path: ^/api/login, roles: PUBLIC_ACCESS }
+    - { path: ^/api/new-products, roles: PUBLIC_ACCESS, methods: [GET] }
+    - { path: ^/api/popular-products, roles: PUBLIC_ACCESS, methods: [GET] }
     - { path: ^/api/register, roles: PUBLIC_ACCESS, methods: [POST] }
     - { path: ^/api/confirm-email, roles: PUBLIC_ACCESS, methods: [GET] }
     - { path: ^/api/login_check, roles: PUBLIC_ACCESS }
-    - { path: ^/api/reset_password, roles: PUBLIC_ACCESS, methods: [GET, POST] }
     - { path: ^/api/reset_password, roles: PUBLIC_ACCESS, methods: [GET, POST] }
     - { path: ^/api/delete-account, roles: [ROLE_USER], methods: [DELETE] }
     - { path: ^/api/modify-account, roles: [ROLE_USER], methods: [PUT] }
