@@ -64,6 +64,7 @@ security:
   access_control:
     - { path: ^/api/login, roles: PUBLIC_ACCESS }
     - { path: ^/api/new-products, roles: PUBLIC_ACCESS, methods: [GET] }
+    - { path: ^/api/product, roles: PUBLIC_ACCESS, methods: [GET] }
     - { path: ^/api/popular-products, roles: PUBLIC_ACCESS, methods: [GET] }
     - { path: ^/api/register, roles: PUBLIC_ACCESS, methods: [POST] }
     - { path: ^/api/confirm-email, roles: PUBLIC_ACCESS, methods: [GET] }

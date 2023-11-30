@@ -35,7 +35,7 @@ class ImageFixtures extends Fixture implements DependentFixtureInterface
             'Crème de jour hydratant légère',
             'Crème de nuit régénèrante',
             'Spray hydratant',
-            'Lotion tonique appaisante',
+            'Lotion tonique apaisante',
             'Crème contour des yeux cernés et poches',
             'Crème contour des yeux anti-rides',
             'Masque purifiant et revitalisant',

@@ -15,9 +15,9 @@ class HomeController extends AbstractController
     public function getNewProducts(ProductRepository $productRepository): JsonResponse
     {
         $products = $productRepository->findBy(['name' => [
-            'Crème de jour hydratant légère', 'Spray hydratant',
-            'Masque purifiant et revitalisant', 'Après-shampoing fortifiant et hydratant'
-        ]], [], 4);
+            'Spray hydratant',
+            'Masque purifiant et revitalisant', 'Baume à lèvres hydratant'
+        ]], [], 3);
 
         $formattedProducts = $this->formatProducts($products);
 
@@ -30,9 +30,9 @@ class HomeController extends AbstractController
     public function getPopularProducts(ProductRepository $productRepository): JsonResponse
     {
         $products = $productRepository->findBy(['name' => [
-            'Shampoing fortifiant et nourrissant', 'Sérum anti-âge',
-            'Savon exfoliant au sel de mer et concombre de mer', 'Lotion tonique appaisante'
-        ]], [], 4);
+            'Complément beauté et bien-être', 'Probiotiques pour la flore intestinale',
+            'Crème hydratante anti-âge',
+        ]], [], 3);
 
         $formattedProducts = $this->formatProducts($products);
 
@@ -56,6 +56,7 @@ class HomeController extends AbstractController
                 'name' => $product->getName(),
                 'price' => $product->getPrice(),
                 'images' => $images,
+                'slug' => $product->getSlug(),
             ];
         }
 

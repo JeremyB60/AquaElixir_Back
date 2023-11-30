@@ -95,3 +95,9 @@ api_popular_products:
     path: /api/popular-products
     controller: App\Controller\HomeController::getPopularProducts
     methods: [GET]
+
+# Product - Récupération d'un produit
+api_product_view:
+    path: /api/product/{slug}
+    controller: App\Controller\DetailProductController::viewProduct
+    methods: [GET]

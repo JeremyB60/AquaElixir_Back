@@ -58,7 +58,7 @@ class ProductFixtures extends Fixture implements DependentFixtureInterface
                 'Crème de jour hydratant légère',
                 'Crème de nuit régénèrante',
                 'Spray hydratant',
-                'Lotion tonique appaisante',
+                'Lotion tonique apaisante',
                 'Crème contour des yeux cernés et poches',
                 'Masque purifiant et revitalisant',
                 'Eau micellaire démaquillante',
