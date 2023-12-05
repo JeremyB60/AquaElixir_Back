@@ -62,8 +62,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
 
     //Relations
-    #[ORM\OneToOne(mappedBy: 'cartUser')]
-    private ?Cart $cartUser;
+    #[ORM\OneToOne(mappedBy: 'user')]
+    private ?Cart $user;
 
     #[ORM\OneToMany(mappedBy: 'orderUser', targetEntity: Order::class)]
     private Collection $orderUser;
@@ -220,23 +220,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         // Remove sensitive data from the user
         // $this->plainPassword = null;
-    }
-
-    public function getCartUser(): ?Cart
-    {
-        return $this->cartUser;
-    }
-
-    public function setCartUser(Cart $cartUser): static
-    {
-        // set the owning side of the relation if necessary
-        if ($cartUser->getCartUser() !== $this) {
-            $cartUser->setCartUser($this);
-        }
-
-        $this->cartUser = $cartUser;
-
-        return $this;
     }
 
     /**

@@ -65,6 +65,8 @@ security:
     - { path: ^/api/login, roles: PUBLIC_ACCESS }
     - { path: ^/api/new-products, roles: PUBLIC_ACCESS, methods: [GET] }
     - { path: ^/api/product, roles: PUBLIC_ACCESS, methods: [GET] }
+    - { path: ^/api/subtype, roles: PUBLIC_ACCESS, methods: [GET] }
+    - { path: ^/api/type, roles: PUBLIC_ACCESS, methods: [GET] }
     - { path: ^/api/popular-products, roles: PUBLIC_ACCESS, methods: [GET] }
     - { path: ^/api/register, roles: PUBLIC_ACCESS, methods: [POST] }
     - { path: ^/api/confirm-email, roles: PUBLIC_ACCESS, methods: [GET] }
@@ -74,6 +76,7 @@ security:
     - { path: ^/api/modify-account, roles: [ROLE_USER], methods: [PUT] }
     - { path: ^/api/logout, roles: [ROLE_USER], methods: [GET] }
     - { path: ^/api/(login|token/refresh), roles: [ROLE_USER], methods: [POST] }
+    # - { path: ^/api/update-cart, roles: [ROLE_USER], methods: [POST] }
     - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
     - { path: ^/admin, roles: [ROLE_ADMIN] }
 

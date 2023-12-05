@@ -2,34 +2,54 @@
 
 namespace App\Entity;
 
-use App\Repository\CartRepository;
+use App\Entity\Traits\CreatedAtTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
 
-#[ORM\Entity(repositoryClass: CartRepository::class)]
+#[ORM\Entity(repositoryClass: "App\Repository\CartRepository")]
 class Cart
 {
+
+    use CreatedAtTrait; // Utilisation du trait pour gérer les timestamps
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column]
-    #[Assert\GreaterThanOrEqual(value: 0)]
-    private ?int $quantity = null;
+    #[ORM\OneToOne(targetEntity: "User")]
+    #[ORM\JoinColumn(name: "user_id", referencedColumnName: "id", unique: true)]
+    private $user;
 
-    #[ORM\OneToMany(mappedBy: 'cart', targetEntity: LineCart::class)]
-    private Collection $cartLineCarts;
-
-    #[ORM\OneToOne(inversedBy: 'cartUser', cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?User $cartUser = null;
+    /**
+     * @ORM\OneToMany(targetEntity="LineCart", mappedBy="cart", cascade={"persist"})
+     */
+    private $lineItems;
 
     public function __construct()
     {
-        $this->cartLineCarts = new ArrayCollection();
+        $this->lineItems = new ArrayCollection();
+    }
+
+    // Autres propriétés et méthodes de la table Cart
+    /**
+     * Setter pour définir l'ID de l'utilisateur dans la table Cart.
+     *
+     * @param int|null $userId
+     * @return $this
+     */
+
+    public function getUser(): ?int
+    {
+        return $this->user ? $this->user->getId() : null;
+    }
+
+    public function setUser(?User $user): self
+    {
+        $this->user = $user;
+
+        return $this;
     }
 
     public function getId(): ?int
@@ -37,55 +57,32 @@ class Cart
         return $this->id;
     }
 
-    public function getQuantity(): ?int
-    {
-        return $this->quantity;
-    }
-
-    public function setQuantity(int $quantity): static
-    {
-        $this->quantity = $quantity;
-
-        return $this;
-    }
     /**
-     * @return Collection<int, LineCart>
+     * @return Collection|LineCart[]
      */
-    public function getCartLineCarts(): Collection
+    public function getLineItems(): Collection
     {
-        return $this->cartLineCarts;
+        return $this->lineItems;
     }
 
-    public function addCartLineCart(LineCart $cartLineCart): static
+    public function addLineItem(LineCart $lineItem): self
     {
-        if (!$this->cartLineCarts->contains($cartLineCart)) {
-            $this->cartLineCarts->add($cartLineCart);
-            $cartLineCart->setCart($this);
+        if (!$this->lineItems->contains($lineItem)) {
+            $this->lineItems[] = $lineItem;
+            $lineItem->setCart($this);
         }
 
         return $this;
     }
 
-    public function removeCartLineCart(LineCart $cartLineCart): static
+    public function removeLineItem(LineCart $lineItem): self
     {
-        if ($this->cartLineCarts->removeElement($cartLineCart)) {
+        if ($this->lineItems->removeElement($lineItem)) {
             // set the owning side to null (unless already changed)
-            if ($cartLineCart->getCart() === $this) {
-                $cartLineCart->setCart(null);
+            if ($lineItem->getCart() === $this) {
+                $lineItem->setCart(null);
             }
         }
-
-        return $this;
-    }
-
-    public function getCartUser(): ?User
-    {
-        return $this->cartUser;
-    }
-
-    public function setCartUser(User $cartUser): static
-    {
-        $this->cartUser = $cartUser;
 
         return $this;
     }

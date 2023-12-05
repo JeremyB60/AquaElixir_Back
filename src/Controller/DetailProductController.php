@@ -56,12 +56,14 @@ class DetailProductController extends AbstractController
         if ($type) {
             $typeData['id'] = $type->getId();
             $typeData['name'] = $type->getTypeName();
+            $typeData['slug'] = $type->getSlug();
 
             $parentType = $type->getParent();
             if ($parentType) {
                 $typeData['parent'] = [
                     'id' => $parentType->getId(),
                     'name' => $parentType->getTypeName(),
+                    'slug' => $parentType->getSlug(),
                 ];
             }
         }
@@ -70,17 +72,13 @@ class DetailProductController extends AbstractController
             'id' => $product->getId(),
             'name' => $product->getName(),
             'price' => $product->getPrice(),
+            'taxe' => $product->getTaxe(),
             'slug' => $product->getSlug(),
             'mesurement' => $product->getMesurement(),
             'description' => $product->getDescription(),
             'detailedDescription' => $product->getDetailedDescription(),
             'images' => $images,
             'type' => $typeData,
-            'type2' => [
-                'id' => $product->getProductType()->getId(),
-                'name' => $product->getProductType()->getTypeName(),
-                'slug' => $product->getProductType()->getSlug(),
-            ],
         ];
     }
 }

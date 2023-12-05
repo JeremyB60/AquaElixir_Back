@@ -77,7 +77,7 @@ api_user_delete:
   requirements:
     id: '\d+'
 
-    # Admin - Supprimer un utilisateur
+# Admin - Supprimer un utilisateur
 api_user_change_role:
   path: "/api/users/{id}/change-role"
   controller: 'App\Controller\AdminUsersController::changeUserRole'
@@ -87,17 +87,33 @@ api_user_change_role:
 
 # Home - Récupération des nouveaux produits et des produits populaires
 api_new_products:
-    path: /api/new-products
-    controller: App\Controller\HomeController::getNewProducts
-    methods: [GET]
+  path: /api/new-products
+  controller: App\Controller\HomeController::getNewProducts
+  methods: [GET]
 
 api_popular_products:
-    path: /api/popular-products
-    controller: App\Controller\HomeController::getPopularProducts
-    methods: [GET]
+  path: /api/popular-products
+  controller: App\Controller\HomeController::getPopularProducts
+  methods: [GET]
 
 # Product - Récupération d'un produit
 api_product_view:
-    path: /api/product/{slug}
-    controller: App\Controller\DetailProductController::viewProduct
-    methods: [GET]
+  path: /api/product/{slug}
+  controller: App\Controller\DetailProductController::viewProduct
+  methods: [GET]
+
+cart_add_to_cart:
+  path: /api/cart/add/{productId}
+  controller: App\Controller\CartController::addToCart
+  methods: [POST]
+
+# Type(Catégorie) - Récupération des produits de la catégorie
+api_subtype_view:
+  path: /api/subtype/{slug}
+  controller: App\Controller\TypeController::viewSubtype
+  methods: ["GET"]
+
+api_type_view:
+  path: /api/type/{slug}
+  controller: App\Controller\TypeController::viewType
+  methods: ["GET"]

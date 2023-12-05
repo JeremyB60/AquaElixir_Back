@@ -10,19 +10,19 @@ class LineCart
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
+    #[ORM\Column(type: "integer")]
+    private $id;
 
-    #[ORM\Column]
-    private ?int $quantity = null;
+    #[ORM\ManyToOne(targetEntity: "Cart", inversedBy: "lineItems")]
+    #[ORM\JoinColumn(name: "cart_id", referencedColumnName: "id")]
+    private $cart;
 
-    #[ORM\ManyToOne(targetEntity:Cart::class, inversedBy:"cartLineCarts")]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Cart $cart = null;
+    #[ORM\ManyToOne(targetEntity: "Product")]
+    #[ORM\JoinColumn(name: "product_id", referencedColumnName: "id")]
+    private $product;
 
-    #[ORM\ManyToOne(inversedBy: 'lineCarts')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Product $lineCartProduct = null;
+    #[ORM\Column(type: "integer")]
+    private $quantity;
 
     public function getId(): ?int
     {
@@ -53,14 +53,14 @@ class LineCart
         return $this;
     }
 
-    public function getLineCartProduct(): ?Product
+    public function getProduct(): ?Product
     {
-        return $this->lineCartProduct;
+        return $this->product;
     }
 
-    public function setLineCartProduct(?Product $lineCartProduct): static
+    public function setProduct(?Product $product): static
     {
-        $this->lineCartProduct = $lineCartProduct;
+        $this->product = $product;
 
         return $this;
     }

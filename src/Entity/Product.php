@@ -216,27 +216,27 @@ class Product
         return $this->lineCarts;
     }
 
-    public function addLineCart(LineCart $lineCart): static
-    {
-        if (!$this->lineCarts->contains($lineCart)) {
-            $this->lineCarts->add($lineCart);
-            $lineCart->setLineCartProduct($this);
-        }
+    // public function addLineCart(LineCart $lineCart): static
+    // {
+    //     if (!$this->lineCarts->contains($lineCart)) {
+    //         $this->lineCarts->add($lineCart);
+    //         $lineCart->setLineCartProduct($this);
+    //     }
 
-        return $this;
-    }
+    //     return $this;
+    // }
 
-    public function removeLineCart(LineCart $lineCart): static
-    {
-        if ($this->lineCarts->removeElement($lineCart)) {
-            // set the owning side to null (unless already changed)
-            if ($lineCart->getLineCartProduct() === $this) {
-                $lineCart->setLineCartProduct(null);
-            }
-        }
+    // public function removeLineCart(LineCart $lineCart): static
+    // {
+    //     if ($this->lineCarts->removeElement($lineCart)) {
+    //         // set the owning side to null (unless already changed)
+    //         if ($lineCart->getLineCartProduct() === $this) {
+    //             $lineCart->setLineCartProduct(null);
+    //         }
+    //     }
 
-        return $this;
-    }
+    //     return $this;
+    // }
 
     /**
      * @return Collection<int, LineProduct>
