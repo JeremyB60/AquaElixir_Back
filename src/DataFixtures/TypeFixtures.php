@@ -20,7 +20,7 @@ class TypeFixtures extends Fixture
     {
         $categories = [
             'Soin du visage' => [
-                'Anti-âge', 'Peau sensible', 'Soins quotidiens'
+                'Anti-âge', 'Peau sensible', 'Soin quotidien'
             ],
             'Soin corporel' => [
                 'Nettoyant', 'Bain', 'Coffret cadeau'

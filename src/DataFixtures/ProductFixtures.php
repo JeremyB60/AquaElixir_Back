@@ -31,14 +31,14 @@ class ProductFixtures extends Fixture implements DependentFixtureInterface
                 'Sérum éclaircissant',
             ],
             'Peau sensible' => [
-                'Crème hydratant pour peau sensible',
+                'Crème hydratante pour peau sensible',
                 'Gel apaisant pour peau sensible',
             ],
             'Nettoyant' => [
                 'Gel douche hydratant',
                 'Gel douche énergisant',
                 'Savon exfoliant au sel de mer et concombre de mer',
-                'Lotion coporelle tonifiante',
+                'Lotion corporelle tonifiante',
                 'Gommage exfoliant pour le corps',
             ],
             'Bain' => [
@@ -54,9 +54,9 @@ class ProductFixtures extends Fixture implements DependentFixtureInterface
                 'Shampoing pour cuir chevelu sensible',
                 'Après-shampoing pour cuir chevelu sensible',
             ],
-            'Soins quotidiens' => [
-                'Crème de jour hydratant légère',
-                'Crème de nuit régénèrante',
+            'Soin quotidien' => [
+                'Crème de jour hydratante légère',
+                'Crème de nuit régénérante',
                 'Spray hydratant',
                 'Lotion tonique apaisante',
                 'Crème contour des yeux cernés et poches',
@@ -73,7 +73,7 @@ class ProductFixtures extends Fixture implements DependentFixtureInterface
             'Peau, cheveux et ongles' => [
                 'Complément alimentaire marin multivitaminé',
                 'Capsules de collagène marin au concombre de mer',
-                'Gélules régénèrantes pour les cheveux et les ongles',
+                'Gélules régénérantes pour les cheveux et les ongles',
                 'Complément beauté et bien-être',
                 'Gélules d\'oméga-3 au concombre de mer',
             ],

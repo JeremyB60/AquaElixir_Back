@@ -19,7 +19,7 @@ class AdminUsersController extends AbstractController
      */
     public function getUsers(UserRepository $userRepository): JsonResponse
     {
-        $users = $userRepository->findAll();
+        $users = $userRepository->findBy([], ['id' => 'ASC']);
 
         $formattedUsers = [];
         foreach ($users as $user) {
