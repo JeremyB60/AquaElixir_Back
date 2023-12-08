@@ -257,7 +257,7 @@ class UserController extends AbstractController
         $userInfo = [
             'firstName' => $user->getFirstName(),
             'lastName' => $user->getLastName(),
-            'email' => $user->getUserIdentifier(),
+            'email' => $user->getEmail(),
             // Add other information you want to return
         ];
 

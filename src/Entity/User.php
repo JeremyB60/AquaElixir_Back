@@ -77,7 +77,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function __construct()
     {
         // Initialise createdAt à la date et heure actuelles.
-        $this->createdAt = new \DateTime(); // Utilisation de DateTime        // Initialisation des autres propriétés.
+        $this->createdAt = new \DateTime();
         $this->orderUser = new ArrayCollection();
         $this->reviewUser = new ArrayCollection();
         $this->userAddress = new ArrayCollection();
@@ -96,7 +96,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->firstName;
     }
 
-    public function setFirstName(string $firstName): static
+    public function setFirstName(string $firstName): self
     {
         $this->firstName = $firstName;
 
@@ -105,10 +105,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getLastName(): ?string
     {
-        return $this->lastName;
+        return  $this->lastName;
     }
 
-    public function setLastName(string $lastName): static
+    public function setLastName(string $lastName): self
     {
         $this->lastName = $lastName;
 
