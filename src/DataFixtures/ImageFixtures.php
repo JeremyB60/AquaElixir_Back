@@ -72,6 +72,7 @@ class ImageFixtures extends Fixture implements DependentFixtureInterface
             'Tisanes relaxantes',
             'Thé digestif',
             'Poudre de concombre de mer',
+            'Coffret',
         ];
 
         foreach ($productData as $productName) {

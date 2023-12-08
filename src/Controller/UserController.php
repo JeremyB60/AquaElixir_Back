@@ -64,7 +64,7 @@ class UserController extends AbstractController
     public function confirmEmail(string $token, UserService $userService, LoggerInterface $logger): JsonResponse
     {
         $result = $userService->confirmEmail($token, $logger);
-    
+
         if ($result->isSuccess()) {
             $this->addFlash('success', 'E-mail confirmé. Inscription réussie. Vous pouvez maintenant vous connecter.');
             return $this->redirectToRoute('login');
@@ -72,7 +72,7 @@ class UserController extends AbstractController
             return new JsonResponse(['message' => 'Email confirmation failed'], 400, [], true);
         }
     }
-    
+
 
     //................................LOGIN...............................................
 
@@ -240,5 +240,27 @@ class UserController extends AbstractController
         return new Response('Logout successful', Response::HTTP_OK);
     }
 
+    //........................USER DATA ......................................
 
+    #[Route('/api/user-info', name: 'get_user_info', methods: ['GET'])]
+
+    public function getUserInfo(Security $security): JsonResponse
+    {
+        // Use the updated Security class
+        $user = $security->getUser();
+
+        if (!$user) {
+            return new JsonResponse(['error' => 'User not authenticated'], 401);
+        }
+
+        // You can adapt this based on the structure of your user entity
+        $userInfo = [
+            'firstName' => $user->getFirstName(),
+            'lastName' => $user->getLastName(),
+            'email' => $user->getUserIdentifier(),
+            // Add other information you want to return
+        ];
+
+        return new JsonResponse($userInfo);
+    }
 }
