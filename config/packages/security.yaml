@@ -62,6 +62,8 @@ security:
       entry_point: jwt
 
   access_control:
+    - { path: ^/api/product/\d+/reviews, roles: PUBLIC_ACCESS, methods: ['GET'] }
+    - { path: ^/api/product/\d+/reviews, roles: ROLE_USER, methods: ['POST'] }
     - { path: ^/api/login, roles: PUBLIC_ACCESS }
     - { path: ^/api/new-products, roles: PUBLIC_ACCESS, methods: [GET] }
     - { path: ^/api/product, roles: PUBLIC_ACCESS, methods: [GET] }

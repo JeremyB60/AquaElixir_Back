@@ -121,7 +121,7 @@ class CartController extends AbstractController
             if (!$cart) {
                 // Créer un panier
                 $cart = new Cart();
-                $cart->setCreatedAt(new \DateTime());
+                // $cart->setCreatedAt(new \DateTime());
                 $cart->setUser($user);
             }
 

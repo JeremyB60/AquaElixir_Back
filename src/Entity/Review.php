@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Traits\CreatedAtTrait;
 use App\Repository\ReviewRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -9,6 +10,9 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: ReviewRepository::class)]
 class Review
 {
+
+    use CreatedAtTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -17,12 +21,12 @@ class Review
     #[ORM\Column]
     private ?int $rating = null;
 
+    #[ORM\Column]
+    private ?string $title = null;
+
     #[ORM\Column(type: Types::TEXT)]
     private ?string $comment = null;
 
-    #[ORM\Column]
-    private ?\DateTime $createdAt = null; // Modification pour utiliser DateTime
-    
     #[ORM\ManyToOne(inversedBy: 'productReview')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Product $productReview = null;
@@ -48,6 +52,18 @@ class Review
         return $this;
     }
 
+    public function getTitle(): ?string
+    {
+        return $this->title;
+    }
+
+    public function setTitle(string $title): static
+    {
+        $this->title = $title;
+
+        return $this;
+    }
+
     public function getComment(): ?string
     {
         return $this->comment;
@@ -56,18 +72,6 @@ class Review
     public function setComment(string $comment): static
     {
         $this->comment = $comment;
-
-        return $this;
-    }
-
-    public function getCreatedAt(): ?\DateTime
-    {
-        return $this->createdAt;
-    }
-
-    public function setCreatedAt(\DateTime $createdAt): self
-    {
-        $this->createdAt = $createdAt;
 
         return $this;
     }

@@ -32,10 +32,25 @@ class UserFixtures extends Fixture
         $admin->setCreatedAt(new \DateTime()); // Utilisation de DateTime
         $manager->persist($admin);
 
+        $user = new User();
+        $this->addReference('user0', $user);
+        $user->setEmail('jeremy.ballin@orange.fr');
+        $user->setLastName('Ballin');
+        $user->setFirstName('Jérémy');
+        $user->setPassword(
+            $this->passwordEncoder->hashPassword($admin, '123123123')
+        );
+        $user->setRoles(['ROLE_USER']);
+        $user->setAccountStatus('active');
+        $user->setIsEmailConfirmed('1');
+        $user->setCreatedAt(new \DateTime()); // Utilisation de DateTime
+        $manager->persist($user);
+
         $faker = Faker\Factory::create('fr_FR');
 
         for ($i = 1; $i <= 20; $i++) {
             $user = new User();
+            $this->addReference('user' . $i, $user);
             $user->setEmail($faker->email);
             $user->setLastName($faker->lastName);
             $user->setFirstName($faker->firstName);
