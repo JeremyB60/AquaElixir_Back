@@ -79,7 +79,7 @@ class ReviewFixtures extends Fixture implements DependentFixtureInterface
         foreach ($productData as $productName) {
             $prodName = $this->getReference('product_' . $this->slugify($productName));
             // Générez un nombre aléatoire entre 0 et 6 pour déterminer le nombre de critiques à créer
-            $numberOfReviews = mt_rand(0, 6);
+            $numberOfReviews = mt_rand(0, 10);
 
             for ($i = 0; $i < $numberOfReviews; $i++) {
                 $this->createReview($manager, $prodName);
@@ -95,13 +95,20 @@ class ReviewFixtures extends Fixture implements DependentFixtureInterface
         $review->setProductReview($product);
         $userId = $this->getReference('user' . mt_rand(0, 20));
         $review->setReviewUser($userId);
-        // Tableau de notes et de commentaires prédéfinis
+        // Tableau de notes, titres et de commentaires prédéfinis
         $ratingsTitlesAndComments = [
-            [1, 'Déçu', 'Produit médiocre. Je ne suis pas satisfait de l\'achat.'],
-            [2, 'Pas terrible', 'Pas vraiment convaincu par ce produit.'],
-            [3, 'Moyen', 'Produit moyen. Rien d\'extraordinaire.'],
-            [4, 'Super produit', 'Très bon produit ! Je le recommande vivement.'],
-            [5, 'Top !', 'Excellent produit ! Au-delà de mes attentes.'],
+            // [1, 'Déçu', 'Produit médiocre. Je ne suis pas du tout satisfait de l\'achat. La qualité est bien en dessous de mes attentes, et je ne recommanderais pas ce produit à d\'autres.'],
+            // [2, 'Pas terrible', 'Je suis plutôt déçu par ce produit. Il ne répond pas vraiment à mes besoins, et je m\'attendais à quelque chose de mieux. La qualité est moyenne, et je ne pense pas le racheter.'],
+            [3, 'Moyen', 'Le produit est tout juste moyen. Il remplit sa fonction de base, mais il n\'a rien d\'extraordinaire. J\'ai connu des produits similaires qui étaient meilleurs.'],
+            [4, 'Super produit', 'Très bon produit ! Il répond parfaitement à mes attentes, et je le recommande vivement. La qualité est au rendez-vous, et j\'en suis très satisfait.'],
+            [4, 'Excellent choix', 'Au-delà de mes attentes ! J\'ai été agréablement surpris par la qualité de ce produit. Il fait exactement ce qu\'il promet, et je le recommande sans hésitation.'],
+            [4, "Très satisfait", "Ce produit a vraiment fait la différence pour mes cheveux. J'ai remarqué une amélioration significative de leur texture et de leur brillance. Très content de mon achat."],
+            [5, "Bonne découverte", "Ce masque capillaire est une belle découverte. Il a aidé à revitaliser mes cheveux sans les alourdir. Je suis content des résultats obtenus."],
+            [5, "Excellent choix", "Je suis agréablement surpris par la qualité de ce produit. Il a répondu à mes attentes et a laissé mes cheveux plus doux et plus sains. Je le recommande vivement à ceux qui cherchent un produit de qualité."],
+            [5, "Très belle surprise", "Ce masque a été une révélation pour mes cheveux. Je l'utilise régulièrement et mes cheveux sont maintenant plus sains et plus beaux que jamais. Je ne peux plus m'en passer !"],
+            [5, "Excellent produit", "Ce masque a une texture onctueuse qui est facile à appliquer. Après l'avoir utilisé, mes cheveux étaient incroyablement soyeux. Je suis ravie des résultats, et il sent très bon !"],
+            [5, "Miracle", "Honnêtement, j'ai essayé de nombreux masques capillaires, mais celui-ci est devenu mon préféré. Il a complètement transformé la santé de mes cheveux. Ils sont moins cassants et beaucoup plus faciles à coiffer. Je suis fan !"],
+            [5, 'J\'adore', "J'adore ce produit ! Mes cheveux étaient devenus très secs et ternes, mais après quelques utilisations, ils sont devenus super doux et brillants. L'odeur est divine, et la texture du masque est facile à rincer. Je recommande vivement ce produit pour des cheveux hydratés et en meilleure santé.."],
         ];
         // Sélectionnez aléatoirement une entrée dans le tableau
         $randomIndex = array_rand($ratingsTitlesAndComments);
@@ -109,7 +116,13 @@ class ReviewFixtures extends Fixture implements DependentFixtureInterface
         $review->setRating($ratingTitleAndComment[0]); // Note
         $review->setTitle($ratingTitleAndComment[1]); // Titre
         $review->setComment($ratingTitleAndComment[2]); // Commentaire
-        $review->setCreatedAt(new \DateTime());
+        // Génération d'une date aléatoire dans une fourchette de 3 mois avant la date actuelle
+        $startDate = new \DateTime('-3 months');
+        $endDate = new \DateTime();
+        $randomDate = mt_rand($startDate->getTimestamp(), $endDate->getTimestamp());
+        $randomDateTime = new \DateTime();
+        $randomDateTime->setTimestamp($randomDate);
+        $review->setCreatedAt($randomDateTime);
 
         $manager->persist($review);
     }

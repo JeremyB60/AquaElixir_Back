@@ -40,13 +40,14 @@ class ProductReviewController extends AbstractController
             } elseif ($daysDifference === 1) {
                 $date = "Hier";
             } elseif ($daysDifference < 7) {
-                $date = "Il y a $daysDifference jours";
+                $days = ceil($daysDifference / 1);
+                $date = "Il y a $daysDifference jour" . ($days > 1 ? 's' : '');
             } elseif ($daysDifference < 30) {
                 $weeks = ceil($daysDifference / 7);
                 $date = "Il y a $weeks semaine" . ($weeks > 1 ? 's' : '');
             } else {
                 $months = ceil($daysDifference / 30);
-                $date = "Il y a $months mois" . ($months > 1 ? 's' : '');
+                $date = "Il y a $months mois";
             }
             $reviewsData[] = [
                 'id' => $review->getId(),
