@@ -20,7 +20,10 @@ class ProductReviewController extends AbstractController
         $entityManager = $doctrine->getManager();
         $reviews = $entityManager
             ->getRepository(Review::class)
-            ->findBy(['productReview' => $productId]);
+            ->findBy(
+                ['productReview' => $productId],
+                ['createdAt' => 'DESC'] // Tri par ordre décroissant de la date
+            );
 
 
 
@@ -59,7 +62,6 @@ class ProductReviewController extends AbstractController
                 'lastname' => substr($lastname, 0, 1) . ".",
                 // Ajoutez d'autres champs si nécessaire
             ];
-            dump($reviewsData);
         }
 
         return new JsonResponse($reviewsData);
@@ -91,18 +93,17 @@ class ProductReviewController extends AbstractController
 
         $entityManager->persist($review);
         $entityManager->flush();
+        // Actualiser l'entité pour s'assurer que l'identifiant est défini
+        $entityManager->refresh($review);
 
-        $responseData = json_encode([
-            'id' => $review->getId(),
-            'rating' => $review->getRating(),
-            'title' => $review->getTitle(),
-            'comment' => $review->getComment(),
-            'createdAt' => $review->getCreatedAt()->format('d-m-Y'),
-            // 'firstname' => $user->getFirstName(),
-            // 'lastname' => $user->getLastName(),
-            // Ajoutez d'autres champs si nécessaire
-        ]);
-
-        return new JsonResponse($responseData, 201);
+        // Vérifier si la revue a été enregistrée avec succès
+        if ($review->getId()) {
+            dump($review);
+            // La revue a été enregistrée avec succès
+            return new JsonResponse(['success' => 'Review successfully saved'], 201);
+        } else {
+            // Une erreur s'est produite lors de l'enregistrement de la revue
+            return new JsonResponse(['error' => 'Failed to save review'], 500);
+        }
     }
 }
