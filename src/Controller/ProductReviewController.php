@@ -25,8 +25,6 @@ class ProductReviewController extends AbstractController
                 ['createdAt' => 'DESC'] // Tri par ordre décroissant de la date
             );
 
-
-
         $reviewsData = [];
         $currentDate = new DateTime();
 
