@@ -47,12 +47,6 @@ class DetailProductController extends AbstractController
         }
         $type = $product->getProductType();
 
-        // $typeData = [
-        //     'id' => null,
-        //     'name' => null,
-        //     'parent' => null,
-        // ];
-
         if ($type) {
             $typeData['id'] = $type->getId();
             $typeData['name'] = $type->getTypeName();
