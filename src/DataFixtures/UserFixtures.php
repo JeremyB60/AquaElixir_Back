@@ -30,6 +30,7 @@ class UserFixtures extends Fixture
         $admin->setAccountStatus('active');
         $admin->setIsEmailConfirmed('1');
         $admin->setCreatedAt(new \DateTime()); // Utilisation de DateTime
+        $admin->setConfirmationToken('');
         $manager->persist($admin);
 
         $user = new User();
@@ -44,6 +45,7 @@ class UserFixtures extends Fixture
         $user->setAccountStatus('active');
         $user->setIsEmailConfirmed('1');
         $user->setCreatedAt(new \DateTime()); // Utilisation de DateTime
+        $user->setConfirmationToken('');
         $manager->persist($user);
 
         $faker = Faker\Factory::create('fr_FR');

@@ -66,6 +66,7 @@ class ProductReviewController extends AbstractController
 
         return new JsonResponse($reviewsData);
     }
+
     /* AJOUTER UN AVIS */
     #[Route('/api/product/{productId}/reviews', name: 'review_create', methods: ['POST'])]
     #[IsGranted('ROLE_USER')]
@@ -115,7 +116,7 @@ class ProductReviewController extends AbstractController
         $user = $this->getUser();
 
         $review = $entityManager->getRepository(Review::class)->find($reviewId);
-        
+
         if (!$review) {
             return new JsonResponse(['error' => 'Review not found'], 500);
         }
@@ -129,5 +130,27 @@ class ProductReviewController extends AbstractController
         $entityManager->flush();
 
         return new JsonResponse(['message' => 'Review deleted successfully'], 201);
+    }
+
+    /* SIGNALER UN AVIS */
+    #[Route('/api/report/{reviewId}', name: 'report_review', methods: ['POST'])]
+    #[IsGranted('ROLE_USER')]
+    public function reportReview($reviewId, ManagerRegistry $doctrine): JsonResponse
+    {
+        $entityManager = $doctrine->getManager();
+        $review = $entityManager->getRepository(Review::class)->find($reviewId);
+
+        // Vérifier si l'avis existe
+        if (!$review) {
+            return new JsonResponse(['error' => 'Review not found'], 404);
+        }
+
+        // Ajouter 1 au champ "report" de l'avis
+        $reportCount = $review->getReport();
+        $review->setReport($reportCount + 1);
+
+        $entityManager->flush();
+
+        return new JsonResponse(['message' => 'Review reported successfully'], 201);
     }
 }

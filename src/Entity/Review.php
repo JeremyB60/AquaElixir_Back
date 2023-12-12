@@ -6,6 +6,7 @@ use App\Entity\Traits\CreatedAtTrait;
 use App\Repository\ReviewRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: ReviewRepository::class)]
 class Review
@@ -14,6 +15,7 @@ class Review
     use CreatedAtTrait;
 
     #[ORM\Id]
+    #[Groups(["report"])]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
@@ -21,10 +23,15 @@ class Review
     #[ORM\Column]
     private ?int $rating = null;
 
+    #[ORM\Column(type: 'integer', nullable: true)]
+    private ?int $report = null;
+
     #[ORM\Column]
+    #[Groups(["report"])]
     private ?string $title = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Groups(["report"])]
     private ?string $comment = null;
 
     #[ORM\ManyToOne(inversedBy: 'productReview')]
@@ -32,6 +39,7 @@ class Review
     private ?Product $productReview = null;
 
     #[ORM\ManyToOne(inversedBy: 'reviewUser')]
+    #[Groups(["report"])]
     #[ORM\JoinColumn(nullable: false)]
     #[ORM\JoinColumn(onDelete:'CASCADE')]
     private ?User $reviewUser = null;
@@ -49,6 +57,18 @@ class Review
     public function setRating(int $rating): static
     {
         $this->rating = $rating;
+
+        return $this;
+    }
+
+    public function getReport(): ?int
+    {
+        return $this->report;
+    }
+
+    public function setReport(?int $report): self
+    {
+        $this->report = $report;
 
         return $this;
     }
