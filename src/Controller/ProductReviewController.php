@@ -14,6 +14,7 @@ use DateTime;
 
 class ProductReviewController extends AbstractController
 {
+    /*AFFICHE LES AVIS DES CLIENTS CONCERNANT LE PRODUIT*/
     #[Route('/api/product/{productId}/reviews', name: 'review_index', methods: ['GET'])]
     public function index(ManagerRegistry $doctrine, int $productId): JsonResponse
     {
@@ -56,6 +57,7 @@ class ProductReviewController extends AbstractController
                 'title' => $review->getTitle(),
                 'comment' => $review->getComment(),
                 'date' => $date,
+                'email' => $user->getEmail(),
                 'firstname' => $user->getFirstName(),
                 'lastname' => substr($lastname, 0, 1) . ".",
                 // Ajoutez d'autres champs si nécessaire
@@ -64,7 +66,7 @@ class ProductReviewController extends AbstractController
 
         return new JsonResponse($reviewsData);
     }
-
+    /* AJOUTER UN AVIS */
     #[Route('/api/product/{productId}/reviews', name: 'review_create', methods: ['POST'])]
     #[IsGranted('ROLE_USER')]
     public function create(Request $request, ManagerRegistry $doctrine, int $productId): JsonResponse
@@ -96,12 +98,36 @@ class ProductReviewController extends AbstractController
 
         // Vérifier si la revue a été enregistrée avec succès
         if ($review->getId()) {
-            dump($review);
             // La revue a été enregistrée avec succès
             return new JsonResponse(['success' => 'Review successfully saved'], 201);
         } else {
             // Une erreur s'est produite lors de l'enregistrement de la revue
             return new JsonResponse(['error' => 'Failed to save review'], 500);
         }
+    }
+    /* SUPPRIMER UN AVIS */
+    #[Route('/api/reviews/{reviewId}', name: 'delete_review', methods: ['DELETE'])]
+    #[IsGranted('ROLE_USER')]
+    public function deleteReview($reviewId, ManagerRegistry $doctrine): JsonResponse
+    {
+        $entityManager = $doctrine->getManager();
+
+        $user = $this->getUser();
+
+        $review = $entityManager->getRepository(Review::class)->find($reviewId);
+        
+        if (!$review) {
+            return new JsonResponse(['error' => 'Review not found'], 500);
+        }
+
+        // Vérifier si l'utilisateur actuel est l'auteur de l'avis
+        if ($review->getReviewUser() !== $user) {
+            return new JsonResponse(['error' => 'Unauthorized'], 403);
+        }
+
+        $entityManager->remove($review);
+        $entityManager->flush();
+
+        return new JsonResponse(['message' => 'Review deleted successfully'], 201);
     }
 }

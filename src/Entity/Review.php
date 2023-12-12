@@ -33,6 +33,7 @@ class Review
 
     #[ORM\ManyToOne(inversedBy: 'reviewUser')]
     #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(onDelete:'CASCADE')]
     private ?User $reviewUser = null;
 
     public function getId(): ?int

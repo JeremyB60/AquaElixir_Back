@@ -36,7 +36,7 @@ class MyAccountController extends AbstractController
         $entityManager->flush();
 
         // Serialize the updated user to JSON
-        $jsonContent = $serializer->serialize($currentUser, 'json');
+        $jsonContent = $serializer->serialize($currentUser, 'json', ['groups' => 'user']);
 
         return new JsonResponse($jsonContent, Response::HTTP_OK, [], true);
     }
