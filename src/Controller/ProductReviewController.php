@@ -133,8 +133,7 @@ class ProductReviewController extends AbstractController
     }
 
     /* SIGNALER UN AVIS */
-    #[Route('/api/report/{reviewId}', name: 'report_review', methods: ['POST'])]
-    #[IsGranted('ROLE_USER')]
+    #[Route('/report/{reviewId}', name: 'report_review', methods: ['POST'])]
     public function reportReview($reviewId, ManagerRegistry $doctrine): JsonResponse
     {
         $entityManager = $doctrine->getManager();

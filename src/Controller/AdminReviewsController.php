@@ -6,12 +6,12 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Repository\ReviewRepository;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class AdminReviewsController extends AbstractController
 {
+    /* RECUPERER LA LISTE DES AVIS SIGNALÉS */
     #[Route("/api/reports", name: "api_reports_list", methods: ["GET"])]
     #[IsGranted('ROLE_ADMIN')]
     public function getReports(ReviewRepository $reviewRepository): JsonResponse
@@ -33,6 +33,7 @@ class AdminReviewsController extends AbstractController
         return $this->json($formattedReports, 200, [], ['groups' => 'report']);
     }
 
+    /* SUPPRIMER UN AVIS */
     #[Route("/api/report/{id}", name: "api_report_delete", methods: ["DELETE"])]
     #[IsGranted('ROLE_ADMIN')]
     public function deleteReport(ReviewRepository $reviewRepository, ManagerRegistry $doctrine, int $id): JsonResponse
