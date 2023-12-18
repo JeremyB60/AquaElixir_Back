@@ -19,4 +19,6 @@
 .phpunit.result.cache
 /phpunit.xml
 ###< symfony/phpunit-bridge ###
-/bundle/
+
+bundle de certificats CA
+
