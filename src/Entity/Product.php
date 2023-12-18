@@ -15,7 +15,7 @@ class Product
 {
     use SlugTrait;
     use CreatedAtTrait;
-    
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -26,6 +26,12 @@ class Product
 
     #[ORM\Column(length: 255)]
     private ?string $reference = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $stripeProductId = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $stripePriceId = null;
 
     #[ORM\Column(type: 'float', precision: 10, scale: 2)]
     private ?float $price;
@@ -102,6 +108,30 @@ class Product
     public function setReference(string $reference): static
     {
         $this->reference = $reference;
+
+        return $this;
+    }
+
+    public function getStripeProductId(): ?string
+    {
+        return $this->stripeProductId;
+    }
+
+    public function setStripeProductId(?string $stripeProductId): static
+    {
+        $this->stripeProductId = $stripeProductId;
+
+        return $this;
+    }
+
+    public function getStripePriceId(): ?string
+    {
+        return $this->stripePriceId;
+    }
+
+    public function setStripePriceId(?string $stripePriceId): static
+    {
+        $this->stripePriceId = $stripePriceId;
 
         return $this;
     }

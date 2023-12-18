@@ -8,6 +8,9 @@ use App\Entity\Product;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Faker\Factory;
+use Stripe\Stripe;
+use Stripe\Product as StripeProduct;
+use Stripe\Price;
 
 class ProductFixtures extends Fixture implements DependentFixtureInterface
 {
@@ -22,6 +25,7 @@ class ProductFixtures extends Fixture implements DependentFixtureInterface
     public function load(ObjectManager $manager): void
     {
         $faker = Factory::create(); // Crée une instance de Faker
+        Stripe::setApiKey('sk_test_51ONM1hBLaSzPsyD6VOMVr9rbdjCdxGRVvSVyO8jVBibfusIAWFYugYjzsKRLbvzn3bGYNfEAQFecZ5K3VQsQXtOh00Y0evnvfy');
 
         $productData = [
             'Anti-âge' => [
@@ -129,6 +133,22 @@ class ProductFixtures extends Fixture implements DependentFixtureInterface
                 $product->setCreatedAt(new \DateTime()); // Utilisation de DateTime
                 $this->addReference('product_' . $this->slugify($productName), $product);
                 $manager->persist($product);
+                // Create products on Stripe
+                $stripeProduct = StripeProduct::create([
+                    'name' => $product->getName(),
+                    // Set other Stripe product properties...
+                ]);
+                // Associate the Stripe product ID with the database product
+                $product->setStripeProductId($stripeProduct->id);
+
+                // Création d'un prix pour le produit sur Stripe
+                $stripePrice = \Stripe\Price::create([
+                    'product' => $stripeProduct->id,
+                    'unit_amount' => $price * 100, // Montant en centimes
+                    'currency' => 'EUR', 
+                ]);
+                // Associate the Stripe price ID with the database price
+                $product->setStripePriceId($stripePrice->id);
             }
         }
 

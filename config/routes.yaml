@@ -120,11 +120,17 @@ api_type_view:
 
 # Reviews
 product_reviews:
-    path: /api/product/{productId}/reviews
-    controller: App\Controller\ProductReviewController::index
-    methods: ['GET']
+  path: /api/product/{productId}/reviews
+  controller: App\Controller\ProductReviewController::index
+  methods: ["GET"]
 
 product_review_create:
-    path: /api/product/{productId}/reviews
-    controller: App\Controller\ProductReviewController::create
-    methods: ['POST']
+  path: /api/product/{productId}/reviews
+  controller: App\Controller\ProductReviewController::create
+  methods: ["POST"]
+
+api_create_checkout_session:
+  path: /api/create-checkout-session
+  controller: 'App\Controller\CheckoutController::createCheckoutSession'
+  methods: ["POST"]
+

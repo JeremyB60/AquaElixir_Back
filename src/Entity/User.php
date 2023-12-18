@@ -219,7 +219,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->getUserIdentifier();
     }
 
-    public function eraseCredentials()
+    public function eraseCredentials(): void
     {
         // Remove sensitive data from the user
         // $this->plainPassword = null;

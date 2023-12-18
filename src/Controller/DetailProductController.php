@@ -66,6 +66,7 @@ class DetailProductController extends AbstractController
             'id' => $product->getId(),
             'name' => $product->getName(),
             'price' => $product->getPrice(),
+            'stripePriceId' => $product->getStripePriceId(),
             'taxe' => $product->getTaxe(),
             'slug' => $product->getSlug(),
             'mesurement' => $product->getMesurement(),
