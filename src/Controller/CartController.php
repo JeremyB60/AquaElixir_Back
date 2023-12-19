@@ -42,7 +42,7 @@ class CartController extends AbstractController
                 'productId' => $product->getId(),
                 'productName' => $product->getName(),
                 'productPrice' => $product->getPrice(),
-                'productStripePriceId' => $product->getStripePriceId(),                
+                'productStripePriceId' => $product->getStripePriceId(),
                 'productSlug' => $product->getSlug(),
                 'productMesurement' => $product->getMesurement(),
                 'productType' => $typeData['type']['name'],
@@ -211,6 +211,38 @@ class CartController extends AbstractController
             return new JsonResponse(['error' => 'Produit non trouvé dans le panier.']);
         } catch (\Exception $e) {
             return new JsonResponse(['error' => 'Une erreur s\'est produite lors de la suppression du produit du panier.']);
+        }
+    }
+    
+    #[Route('/api/clear-cart', name: 'api_clear_cart', methods: ['DELETE'])]
+    #[IsGranted('ROLE_USER')]
+    public function clearCart(ManagerRegistry $doctrine): Response
+    {
+        $entityManager = $doctrine->getManager();
+
+        try {
+            // Get the currently authenticated user
+            $user = $this->getUser();
+
+            // Get the user's cart
+            $cart = $entityManager->getRepository(Cart::class)->findOneBy(['user' => $user]);
+
+            if ($cart) {
+                // Find and remove all line items associated with the user's cart
+                $cartItems = $entityManager->getRepository(LineCart::class)->findBy(['cart' => $cart]);
+
+                foreach ($cartItems as $lineItem) {
+                    $entityManager->remove($lineItem);
+                }
+
+                $entityManager->flush();
+
+                return new JsonResponse(['message' => 'Panier vidé avec succès !']);
+            }
+
+            return new JsonResponse(['error' => 'Panier non trouvé pour l\'utilisateur.']);
+        } catch (\Exception $e) {
+            return new JsonResponse(['error' => 'Une erreur s\'est produite lors de la suppression des éléments du panier.']);
         }
     }
 }

@@ -27,9 +27,12 @@ class StripeController extends AbstractController
 
             // Récupérer la session Stripe
             $session = $stripe->checkout->sessions->retrieve($jsonObj->session_id);
-            dump($session);
+
+            // Récupérer les line items de la session
+            $lineItems = $stripe->checkout->sessions->allLineItems($session->id);
+
             // Retourner la réponse JSON avec le statut et l'adresse e-mail du client
-            return new JsonResponse(['status' => $session->status, 'customer_email' => $session->customer_details->email], Response::HTTP_OK);
+            return new JsonResponse(['status' => $session->status, 'customer_email' => $session->customer_details->email, 'line_items' => $lineItems], Response::HTTP_OK);
         } catch (\Exception $e) {
             // Gérer les erreurs et retourner une réponse JSON avec le code HTTP 500
             return new JsonResponse(['error' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
