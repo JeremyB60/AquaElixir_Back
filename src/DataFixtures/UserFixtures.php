@@ -44,7 +44,10 @@ class UserFixtures extends Fixture
         $user->setRoles(['ROLE_USER']);
         $user->setAccountStatus('active');
         $user->setIsEmailConfirmed('1');
-        $user->setCreatedAt(new \DateTime()); // Utilisation de DateTime
+        // Générer une date aléatoire sur une période de 3 mois
+        $randomDays = mt_rand(0, 90); // Nombre de jours aléatoire entre 0 et 90
+        $randomDate = new \DateTime("-$randomDays days");
+        $user->setCreatedAt($randomDate); 
         $user->setConfirmationToken('');
         $manager->persist($user);
 

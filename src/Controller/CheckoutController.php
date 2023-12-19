@@ -59,7 +59,7 @@ class CheckoutController extends AbstractController
                 'ui_mode' => "embedded",
                 'return_url' => $this->yourDomain . '/return?session_id={CHECKOUT_SESSION_ID}',
             ]);
-
+            dump($checkout_session);
             return new JsonResponse(['clientSecret' => $checkout_session->client_secret]);
         } catch (\Stripe\Exception\ApiErrorException $e) {
             return new JsonResponse(['error' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);

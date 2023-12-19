@@ -42,6 +42,7 @@ class CartController extends AbstractController
                 'productId' => $product->getId(),
                 'productName' => $product->getName(),
                 'productPrice' => $product->getPrice(),
+                'productStripePriceId' => $product->getStripePriceId(),                
                 'productSlug' => $product->getSlug(),
                 'productMesurement' => $product->getMesurement(),
                 'productType' => $typeData['type']['name'],

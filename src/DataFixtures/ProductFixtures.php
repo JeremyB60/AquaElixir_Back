@@ -10,7 +10,7 @@ use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Faker\Factory;
 use Stripe\Stripe;
 use Stripe\Product as StripeProduct;
-use Stripe\Price;
+// use Stripe\Price; /*Je l'inclus directement dans le price::create plus bas */
 
 class ProductFixtures extends Fixture implements DependentFixtureInterface
 {
@@ -130,13 +130,17 @@ class ProductFixtures extends Fixture implements DependentFixtureInterface
                 $product->setStock($faker->numberBetween(2, 5) * 10);
                 $product->setSlug($this->slugify($productName));
                 $product->setProductType($categoryType);
-                $product->setCreatedAt(new \DateTime()); // Utilisation de DateTime
+                // Générer une date aléatoire sur une période d'un mois
+                $randomDays = mt_rand(0, 30); // Nombre de jours aléatoire entre 0 et 30
+                $randomDate = new \DateTime("-$randomDays days");
+                $product->setCreatedAt($randomDate);
                 $this->addReference('product_' . $this->slugify($productName), $product);
                 $manager->persist($product);
-                // Create products on Stripe
+                // Creation du produit sur Stripe
                 $stripeProduct = StripeProduct::create([
                     'name' => $product->getName(),
-                    // Set other Stripe product properties...
+                    'description' => $product->getDescription(),
+                    // 'images' => ['https://localhost:8000/public/images/products/' . $this->slugify($productName) . '.jpg'],
                 ]);
                 // Associate the Stripe product ID with the database product
                 $product->setStripeProductId($stripeProduct->id);
@@ -145,7 +149,7 @@ class ProductFixtures extends Fixture implements DependentFixtureInterface
                 $stripePrice = \Stripe\Price::create([
                     'product' => $stripeProduct->id,
                     'unit_amount' => $price * 100, // Montant en centimes
-                    'currency' => 'EUR', 
+                    'currency' => 'EUR',
                 ]);
                 // Associate the Stripe price ID with the database price
                 $product->setStripePriceId($stripePrice->id);
