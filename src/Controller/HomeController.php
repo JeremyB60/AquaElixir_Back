@@ -14,14 +14,24 @@ class HomeController extends AbstractController
      */
     public function getNewProducts(ProductRepository $productRepository): JsonResponse
     {
-        $products = $productRepository->findBy(['name' => [
-            'Spray hydratant',
-            'Masque purifiant et revitalisant', 'Baume à lèvres hydratant'
-        ]], [], 3);
+        // Récupérer tous les produits
+        $allProducts = $productRepository->findAll();
 
-        $formattedProducts = $this->formatProducts($products);
+        // Mélanger les produits de manière aléatoire
+        shuffle($allProducts);
+
+        // Prendre les trois premiers produits après le mélange
+        $randomProducts = array_slice($allProducts, 0, 3);
+
+        $formattedProducts = $this->formatProducts($randomProducts);
 
         return $this->json($formattedProducts);
+        // $products = $productRepository->findBy(
+        //     [],            // Aucun critère de recherche spécifique
+        //     ['createdAt' => 'DESC'],  // Tri par ordre décroissant sur le champ 'created_at'
+        //     3               // Limite de résultats à 3
+        // );
+        // $formattedProducts = $this->formatProducts($products);
     }
 
     /**
@@ -29,14 +39,19 @@ class HomeController extends AbstractController
      */
     public function getPopularProducts(ProductRepository $productRepository): JsonResponse
     {
-        $products = $productRepository->findBy(['name' => [
-            'Complément beauté et bien-être', 'Probiotiques pour la flore intestinale',
-            'Crème hydratante anti-âge',
-        ]], [], 3);
+        $allProducts = $productRepository->findAll();
+        shuffle($allProducts);
+        $randomProducts = array_slice($allProducts, 0, 3);
 
-        $formattedProducts = $this->formatProducts($products);
+        $formattedProducts = $this->formatProducts($randomProducts);
 
         return $this->json($formattedProducts);
+        
+        // $products = $productRepository->findBy(['name' => [
+        //     'Complément beauté et bien-être', 'Probiotiques pour la flore intestinale',
+        //     'Crème hydratante anti-âge',
+        // ]], [], 3);
+        // $formattedProducts = $this->formatProducts($products);
     }
 
     private function formatProducts(array $products): array

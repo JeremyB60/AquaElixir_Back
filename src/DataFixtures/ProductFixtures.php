@@ -101,8 +101,8 @@ class ProductFixtures extends Fixture implements DependentFixtureInterface
                 'Elixir marin pour renforcer le système immunitaire',
                 'Spray nasal à l\'eau de mer et extraits de concombre de mer',
                 'Sirop apaisant pour les maux de gorge',
-                'Gelée de concombre de mer',
-                'Poudre de concombre de mer',
+                // 'Gelée de concombre de mer',
+                // 'Poudre de concombre de mer',
             ],
             'Protection solaire' => [
                 'Crème solaire SPF 30',

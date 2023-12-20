@@ -54,7 +54,7 @@ class ImageFixtures extends Fixture implements DependentFixtureInterface
             'Crème apaisante pour l\'eczéma et le psoriasis',
             'Shampoing ultra apaisant pour cheveux sec',
             'Crème réparatrice pour les pieds',
-            'Gelée de concombre de mer',
+            // 'Gelée de concombre de mer',
             'Spray nasal à l\'eau de mer et extraits de concombre de mer',
             'Baume à lèvres réparateur',
             'Elixir marin pour renforcer le système immunitaire',
@@ -71,7 +71,8 @@ class ImageFixtures extends Fixture implements DependentFixtureInterface
             'Gélules régénérantes pour les cheveux et les ongles',
             'Tisanes relaxantes',
             'Thé digestif',
-            'Poudre de concombre de mer',
+            'Sel de bain relaxant aux extraits de concombre de mer',
+            // 'Poudre de concombre de mer',
             'Coffret',
         ];
 
