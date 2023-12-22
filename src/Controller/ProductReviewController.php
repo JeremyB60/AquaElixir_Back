@@ -11,9 +11,17 @@ use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use DateTime;
+use Doctrine\ORM\EntityManagerInterface;
 
 class ProductReviewController extends AbstractController
 {
+    private EntityManagerInterface $entityManager;
+
+    public function __construct(EntityManagerInterface $entityManager)
+    {
+        $this->entityManager = $entityManager;
+    }
+
     /*AFFICHE LES AVIS DES CLIENTS CONCERNANT LE PRODUIT*/
     #[Route('/api/product/{productId}/reviews', name: 'review_index', methods: ['GET'])]
     public function index(ManagerRegistry $doctrine, int $productId): JsonResponse
@@ -96,6 +104,8 @@ class ProductReviewController extends AbstractController
         $entityManager->flush();
         // Actualiser l'entité pour s'assurer que l'identifiant est défini
         $entityManager->refresh($review);
+        // Mise à jour de la moyenne après l'ajout de la revue
+        $this->updateAverageRating($product);
 
         // Vérifier si la revue a été enregistrée avec succès
         if ($review->getId()) {
@@ -129,6 +139,9 @@ class ProductReviewController extends AbstractController
         $entityManager->remove($review);
         $entityManager->flush();
 
+        // Mise à jour de la moyenne après la suppression de la revue
+        $this->updateAverageRating($review->getProductReview());
+
         return new JsonResponse(['message' => 'Review deleted successfully'], 201);
     }
 
@@ -151,5 +164,28 @@ class ProductReviewController extends AbstractController
         $entityManager->flush();
 
         return new JsonResponse(['message' => 'Review reported successfully'], 201);
+    }
+
+    // Fonction pour mettre à jour la moyenne des avis
+    private function updateAverageRating(Product $product): void
+    {
+        $reviews = $product->getProductReview();
+        $totalReviews = count($reviews);
+
+        if ($totalReviews > 0) {
+            $totalRating = 0;
+
+            foreach ($reviews as $review) {
+                $totalRating += $review->getRating();
+            }
+            $averageRating = $totalRating / $totalReviews;
+            $product->setAverageReview($averageRating);
+
+            $this->entityManager->persist($product);
+            $this->entityManager->flush();
+        } else {
+            // Si aucune revue, la moyenne est 0 (ou une valeur par défaut)
+            $product->setAverageReview(0);
+        }
     }
 }

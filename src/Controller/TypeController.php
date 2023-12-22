@@ -117,6 +117,7 @@ class TypeController extends AbstractController
                     'price' => $product->getPrice(),
                     'slug' => $product->getSlug(),
                     'images' => $images,
+                    'averageReview' => $product->getAverageReview()
                     // Ajoutez d'autres champs si nécessaire
                 ];
             }
@@ -155,6 +156,7 @@ class TypeController extends AbstractController
                 'price' => $product->getPrice(),
                 'slug' => $product->getSlug(),
                 'images' => $images,
+                'averageReview' => $product->getAverageReview()
                 // Ajoutez d'autres champs si nécessaire
             ];
         }

@@ -10,7 +10,7 @@ use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Faker\Factory;
 use Stripe\Stripe;
 use Stripe\Product as StripeProduct;
-// use Stripe\Price; /*Je l'inclus directement dans le price::create plus bas */
+// use Stripe\Price; /* Autre façon : je l'inclus directement dans le price::create plus bas */
 
 class ProductFixtures extends Fixture implements DependentFixtureInterface
 {
@@ -126,7 +126,7 @@ class ProductFixtures extends Fixture implements DependentFixtureInterface
                 $product->setTaxe($price * 0.2 / 1.2);
                 $product->setDescription($this->generateRandomDescription());
                 $product->setDetailedDescription($this->generateRandomDetailedDescription());
-                $product->setMesurement($faker->randomElement(['50ml', '100ml', '200ml']));
+                $product->setMesurement($faker->randomElement(['50 ml', '100 ml', '200ml']));
                 $product->setStock($faker->numberBetween(2, 5) * 10);
                 $product->setSlug($this->slugify($productName));
                 $product->setProductType($categoryType);
@@ -142,16 +142,16 @@ class ProductFixtures extends Fixture implements DependentFixtureInterface
                     'description' => $product->getDescription(),
                     // 'images' => ['https://localhost:8000/public/images/products/' . $this->slugify($productName) . '.jpg'],
                 ]);
-                // Associate the Stripe product ID with the database product
+                // Associer l'ID du produit Stripe avec le produit de la bdd
                 $product->setStripeProductId($stripeProduct->id);
 
-                // Création d'un prix pour le produit sur Stripe
+                // Ajout du prix en centimes sur Stripe
                 $stripePrice = \Stripe\Price::create([
                     'product' => $stripeProduct->id,
                     'unit_amount' => $price * 100, // Montant en centimes
                     'currency' => 'EUR',
                 ]);
-                // Associate the Stripe price ID with the database price
+                // Associer le prix du produit Stripe avec le prix de la bdd
                 $product->setStripePriceId($stripePrice->id);
             }
         }

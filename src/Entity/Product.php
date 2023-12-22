@@ -51,6 +51,9 @@ class Product
     #[ORM\Column(length: 255)]
     private ?string $stock = null;
 
+    #[ORM\Column(type: "decimal", precision: 2, scale: 1, nullable: true)]
+    private ?float $averageReview;
+
     #[ORM\OneToMany(mappedBy: 'image', targetEntity: Image::class)]
     private Collection $images;
 
@@ -204,6 +207,18 @@ class Product
     public function setStock(string $stock): static
     {
         $this->stock = $stock;
+
+        return $this;
+    }
+
+    public function getAverageReview(): ?float
+    {
+        return $this->averageReview;
+    }
+
+    public function setAverageReview(?float $averageReview): self
+    {
+        $this->averageReview = $averageReview;
 
         return $this;
     }

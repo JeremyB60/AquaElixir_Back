@@ -72,6 +72,7 @@ class HomeController extends AbstractController
                 'price' => $product->getPrice(),
                 'images' => $images,
                 'slug' => $product->getSlug(),
+                'averageReview' => $product->getAverageReview()
             ];
         }
 

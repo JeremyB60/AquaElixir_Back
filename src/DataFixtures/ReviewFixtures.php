@@ -84,6 +84,8 @@ class ReviewFixtures extends Fixture implements DependentFixtureInterface
             for ($i = 0; $i < $numberOfReviews; $i++) {
                 $this->createReview($manager, $prodName);
             }
+            // Calculate and update the average rating for the product
+            $this->calculateAverageRating($manager, $prodName);
         }
 
         $manager->flush();
@@ -125,6 +127,30 @@ class ReviewFixtures extends Fixture implements DependentFixtureInterface
         $review->setCreatedAt($randomDateTime);
 
         $manager->persist($review);
+        $manager->flush();
+    }
+
+
+    private function calculateAverageRating(ObjectManager $manager, $product)
+    {
+        $reviews = $manager->getRepository(Review::class)->findBy(['productReview' => $product]);
+
+        if (empty($reviews)) {
+            return 0; // If there are no reviews, return 0 as the average rating
+        }
+
+        $totalRating = 0;
+
+        foreach ($reviews as $review) {
+            $totalRating += $review->getRating();
+        }
+
+        $averageRating = round($totalRating / count($reviews), 1); // Round to one decimal place
+
+        // Update the product entity with the calculated average rating
+        $product->setAverageReview($averageRating);
+        $manager->persist($product);
+        $manager->flush();
     }
 
     public function getDependencies(): array

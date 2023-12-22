@@ -74,6 +74,7 @@ class DetailProductController extends AbstractController
             'detailedDescription' => $product->getDetailedDescription(),
             'images' => $images,
             'type' => $typeData,
+            'averageReview' => $product->getAverageReview()
         ];
     }
 }
