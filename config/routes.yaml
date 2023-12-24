@@ -99,7 +99,7 @@ api_popular_products:
 # Product - Récupération d'un produit
 api_product_view:
   path: /api/product/{slug}
-  controller: App\Controller\DetailProductController::viewProduct
+  controller: App\Controller\ProductController::viewProduct
   methods: [GET]
 
 cart_add_to_cart:
@@ -133,4 +133,3 @@ api_create_checkout_session:
   path: /api/create-checkout-session
   controller: 'App\Controller\CheckoutController::createCheckoutSession'
   methods: ["POST"]
-

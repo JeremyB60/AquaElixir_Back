@@ -1,7 +1,5 @@
 <?php
 
-// src/Controller/StripeController.php
-
 namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;

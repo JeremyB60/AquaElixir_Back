@@ -8,7 +8,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use App\Repository\ProductRepository;
 use App\Entity\Product;
 
-class DetailProductController extends AbstractController
+class ProductController extends AbstractController
 {
     private $productRepository;
 
